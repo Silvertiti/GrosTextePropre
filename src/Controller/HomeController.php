@@ -23,6 +23,8 @@ class HomeController
     {
         $app->get('/', \App\Controller\HomeController::class . ':index');
         $app->get('/stages', \App\Controller\HomeController::class . ':stages');
+        $app->get('/login', \App\Controller\HomeController::class . ':login');
+
     }
 
     // Page d'accueil
@@ -51,4 +53,15 @@ class HomeController
             'offres' => $offres
         ]);
     }
+        // Page des login
+        public function login(Request $request, Response $response): Response
+        {
+            $em = $this->container->get(EntityManager::class);
+            $offres = $em->getRepository(Stage::class)->findAll();
+        
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'login.twig', [
+                'title' => 'login',
+            ]);
+        }
 }
