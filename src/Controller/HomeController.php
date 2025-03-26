@@ -9,6 +9,8 @@ use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Model\User;
 use App\Model\Stage;
+use App\Middlewares\AdminMiddleware;
+use App\Middlewares\UserMiddleware;
 
 class HomeController
 {
@@ -21,96 +23,45 @@ class HomeController
 
     public function registerRoutes($app)
     {
-        $app->get('/', \App\Controller\HomeController::class . ':index');
-        $app->get('/stages', \App\Controller\HomeController::class . ':stages');
-        $app->get('/login', \App\Controller\HomeController::class . ':login');
-        $app->get('/addjob', \App\Controller\HomeController::class . ':addjob');
-        $app->post('/addjob', \App\Controller\HomeController::class . ':storeJob');
-        $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages');
+        $app->get('/', \App\Controller\HomeController::class . ':index')->add(UserMiddleware::class);
+        $app->get('/login', \App\Controller\HomeController::class . ':login')->setName('login');
+        $app->get('/addjob', \App\Controller\HomeController::class . ':addjob')->add(UserMiddleware::class);
+        $app->post('/addjob', \App\Controller\HomeController::class . ':storeJob')->add(UserMiddleware::class);
+        $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages')->add(AdminMiddleware::class);
         $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
         
-        
-
-
     }
 
         // Page d'accueil
         public function index(Request $request, Response $response): Response
         {
             $em = $this->container->get(EntityManager::class);
-            $users = $em->getRepository(User::class)->findAll();
+
 
             $view = Twig::fromRequest($request);
             return $view->render($response, 'home.twig', [
                 'title' => 'Accueil',
                 'message' => 'Bienvenue dans mon projet Slim avec Twig !',
-                'users' => $users
+                'session' => var_export($this->container->get('session')->get('role'),true),
+                'test' => $request->getAttribute('user')
             ]);
         }
-
-        public function stages(Request $request, Response $response): Response
-        {
-            $em = $this->container->get(EntityManager::class);
-            $params = $request->getQueryParams();
-        
-            $query = $params['q'] ?? '';
-            $page = isset($params['page']) ? max(1, (int)$params['page']) : 1;
-            $limit = 10; // nombre d'offres par page
-            $offset = ($page - 1) * $limit;
-        
-            // gestion avec Query appel de la base de donnée en fonction de la recherche
-            $qb = $em->createQueryBuilder();
-            $qb->select('s')
-                ->from(Stage::class, 's')
-                ->where('s.disponible = false');
-        
-            if (!empty($query)) {
-                $qb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
-                ->setParameter('search', '%' . $query . '%');
-            }
-        
-            $qb->setFirstResult($offset)
-            ->setMaxResults($limit);
-
-            // Exécution de la requête → récupération des résultats
-            $offres = $qb->getQuery()->getResult();
-        
-            // Compter le total pour pagination
-            $countQb = $em->createQueryBuilder()
-                ->select('COUNT(s.id)')
-                ->from(Stage::class, 's')
-                ->where('s.disponible = false');
-        
-            if (!empty($query)) {
-                $countQb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
-                        ->setParameter('search', '%' . $query . '%');
-            }
-        
-            $total = $countQb->getQuery()->getSingleScalarResult();
-            $totalPages = ceil($total / $limit);
-        
-            // affichage avec twig
-            $view = Twig::fromRequest($request);
-            return $view->render($response, 'stages.twig', [
-                'title' => 'Offres de Stage',
-                'offres' => $offres,
-                'page' => $page,
-                'totalPages' => $totalPages,
-                'query' => $query
-            ]);
-        }
-    
     
         // Page des login
         public function login(Request $request, Response $response): Response
         {
             $em = $this->container->get(EntityManager::class);
-        
+            
+            //fake login
+            $this->container->get('session')->set('role', 'admin');
+            $this->container->get('session')->set('idUser', 1);
+
             $view = Twig::fromRequest($request);
             return $view->render($response, 'login.twig', [
                 'title' => 'login',
             ]);
         }
+
         // Page des AddJob
         public function addjob(Request $request, Response $response): Response
         {
