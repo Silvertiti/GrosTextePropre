@@ -59,7 +59,7 @@ http_response_code(404); // Définit le code de réponse HTTP à 404
     <div class="container">
         <h1>Erreur : 404</h1>
         <p>Oups ! La page que vous recherchez n'existe pas.</p>
-        <a href="index.html">Retour à l'accueil</a>
+        <a href="index.php">Retour à l'accueil</a>
     </div>
 </body>
 </html>
