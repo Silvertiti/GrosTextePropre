@@ -1,12 +1,71 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>{{ title }}</title>
-</head>
-<body>
-    <h1>{{ message }}</h1>
-      {% for user in users %}
-        <li>{{ user.email|e }}</li>
-    {% endfor %}
-</body>
-</html>
+{% extends "layout.html.twig" %}
+
+{% block style %}
+  body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    width: 100%;
+  }
+
+  .hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
+      url("https://cdn.discordapp.com/attachments/1178992668500561932/1338493752662036541/240e0dd9cbee24c92744fce197e129a5.webp?ex=67e4a232&is=67e350b2&hm=1cbe3c6a7da4bc7298dd116fcea13504bfe51c4421daadef0056b9bb019ff09b&") no-repeat center center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    color: white;
+    text-align: center;
+    padding: 100px 20px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+
+  .hero p {
+    font-size: 18px;
+    margin-bottom: 30px;
+  }
+
+  .btn-attractive {
+    background-color: #ffc107;
+    color: #000;
+    font-size: 20px;
+    font-weight: bold;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+  }
+
+  .btn-attractive:hover {
+    background-color: #e0a800;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+
+  .btn-attractive span {
+    margin-left: 10px;
+  }
+{% endblock %}
+
+{% block content %}
+  <header class="hero" id="home">
+    <h1>Bienvenue sur Gros Texte</h1>
+    <p>Une plateforme pour gérer vos stages et opportunités professionnelles.</p>
+    <a href="/stages" class="btn btn-attractive">
+      Découvrir nos offres <span>🚀</span>
+    </a>
+  </header>
+{% endblock %}
