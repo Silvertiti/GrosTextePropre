@@ -1,0 +1,64 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Offres de Stage{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+    <h1 class="text-center mb-4">Offres de Stage</h1>
+
+    {# 🔍 Barre de recherche #}
+    <form method="GET" action="/stages" class="mb-4">
+        <div class="input-group">
+            <input type="text" class="form-control" name="q" placeholder="Rechercher un stage..."
+                   value="{{ query|default('') }}">
+            <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+        </div>
+    </form>
+
+    {% if offres is not empty %}
+        <div class="row">
+            {% for offre in offres %}
+                <div class="col-md-4">
+                    <div class="card mb-4 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ offre.getTitre() }}</h5>
+                            <h6 class="card-subtitle mb-2 text-muted">{{ offre.getEntreprise() }}</h6>
+                            <p class="card-text">
+                                {{ offre.getDescription()|length > 150 
+                                    ? offre.getDescription()[:150] ~ '...' 
+                                    : offre.getDescription() 
+                                }}
+                            </p>
+                            <a href="#" class="btn btn-primary">Postuler</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        {# 🔁 Pagination #}
+        {% if totalPages > 1 %}
+        <nav class="my-4">
+            <ul class="pagination justify-content-center">
+                {% for p in 1..totalPages %}
+                    <li class="page-item {% if p == page %}active{% endif %}">
+                        <a class="page-link" href="?page={{ p }}{% if query is defined and query %}&q={{ query }}{% endif %}">
+                            {{ p }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+        {% endif %}
+
+    {% else %}
+        <div class="alert alert-warning text-center">
+            {% if query is defined and query %}
+                Aucun stage trouvé pour <strong>"{{ query }}"</strong>.
+            {% else %}
+                Aucune offre de stage disponible pour le moment.
+            {% endif %}
+        </div>
+    {% endif %}
+</section>
+{% endblock %}

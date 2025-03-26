@@ -1,0 +1,50 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Admin - Gestion des Stages{% endblock %}
+
+{% block content %}
+<section class="container my-5">
+  <h1 class="mb-4 text-center">Gestion des Stages</h1>
+
+  {% if offres is not empty %}
+    <table class="table table-bordered text-center align-middle">
+      <thead class="table-light">
+        <tr>
+          <th>Titre</th>
+          <th>Entreprise</th>
+          <th>État</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for offre in offres %}
+          <tr>
+            <td>{{ offre.getTitre() }}</td>
+            <td>{{ offre.getEntreprise() }}</td>
+            <td>
+              {% if offre.isDisponible() %}
+                <span class="badge bg-success">Disponible</span>
+              {% else %}
+                <span class="badge bg-secondary">Indisponible</span>
+              {% endif %}
+            </td>
+            <td>
+              <form method="POST" action="/admin/stages/{{ offre.getId() }}/toggle">
+                <button type="submit" class="btn btn-sm {% if offre.isDisponible() %}btn-warning{% else %}btn-success{% endif %}">
+                  {% if offre.isDisponible() %}
+                    Marquer comme indisponible
+                  {% else %}
+                    Marquer comme disponible
+                  {% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info text-center">Aucun stage en base.</div>
+  {% endif %}
+</section>
+{% endblock %}
