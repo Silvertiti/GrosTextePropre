@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -21,6 +21,7 @@ class Promotion
     /** 
      * @var Collection<int, User> 
      */
+    /*
     #[ORM\OneToMany(mappedBy: 'promotion', targetEntity: User::class)]
     private Collection $etudiants;
 
@@ -42,3 +43,4 @@ class Promotion
 
     public function getEtudiants(): Collection { return $this->etudiants; }
 }
+*/

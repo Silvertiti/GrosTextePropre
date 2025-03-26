@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -52,3 +52,4 @@ class Entreprise
     public function getPilote(): ?User { return $this->pilote; }
     public function getStatut(): string { return $this->statut; }
 }
+*/

@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -24,3 +24,4 @@ class Competence
     public function getId(): int { return $this->id; }
     public function getNom(): string { return $this->nom; }
 }
+*/

@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -27,3 +27,4 @@ class OffreCompetence
     public function getOffre(): Offre { return $this->offre; }
     public function getCompetence(): Competence { return $this->competence; }
 }
+*/

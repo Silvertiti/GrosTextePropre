@@ -1,5 +1,5 @@
 <?php
-
+/*
 namespace App\Model;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -41,3 +41,4 @@ class Evaluation
     public function getNote(): int { return $this->note; }
     public function getCommentaire(): ?string { return $this->commentaire; }
 }
+*/
