@@ -24,14 +24,31 @@ class HomeController
     public function registerRoutes($app)
     {
         $app->get('/', \App\Controller\HomeController::class . ':index')->add(UserMiddleware::class);
-        $app->get('/login', \App\Controller\HomeController::class . ':login')->setName('login');
         $app->get('/addjob', \App\Controller\HomeController::class . ':addjob')->add(UserMiddleware::class);
         $app->post('/addjob', \App\Controller\HomeController::class . ':storeJob')->add(UserMiddleware::class);
         $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages')->add(AdminMiddleware::class);
         $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
-        
+        $app->get('/login', \App\Controller\HomeController::class . ':loginPage')->setName('login');
+        $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
+        $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
+
+
     }
 
+        public function checkRoleBeforeAccess(Request $request, Response $response): Response
+        {
+            $role = $this->container->get('session')->get('role');
+        
+            if ($role === 'admin') {
+                return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+            }
+        
+            // Si c’est un user, on affiche GUUUUU
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'message.twig', [
+                'message' => 'GUUUUU'
+            ]);
+        }
         // Page d'accueil
         public function index(Request $request, Response $response): Response
         {
@@ -46,6 +63,40 @@ class HomeController
                 'test' => $request->getAttribute('user')
             ]);
         }
+
+        public function loginPage(Request $request, Response $response): Response
+        {
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'login.twig');
+        }
+        public function processLogin(Request $request, Response $response): Response
+        {
+            $data = $request->getParsedBody();
+            $email = $data['email'] ?? '';
+            $password = $data['password'] ?? '';
+        
+            $em = $this->container->get(EntityManager::class);
+            $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
+        
+            // ✅ TEMPORAIRE : on ne vérifie que l'email
+            if ($user) {
+                $session = $this->container->get('session');
+                $session->set('idUser', $user->getId());
+                $session->set('role', $user->getRole()); // 🔥 rôle issu de la BDD !
+            
+                return $response->withHeader('Location', '/')->withStatus(302);
+            }
+        
+            // Mauvais identifiants
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'login.twig', [
+                'error' => 'Email incorrect ou inexistant'
+            ]);
+        }
+        
+        
+
+
     
         // Page des login
         public function login(Request $request, Response $response): Response
