@@ -31,6 +31,8 @@ class HomeController
         $app->get('/login', \App\Controller\HomeController::class . ':loginPage')->setName('login');
         $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
         $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
+        $app->get('/parametres', \App\Controller\HomeController::class . ':parametres')->add(UserMiddleware::class);
+
 
 
     }
@@ -43,11 +45,8 @@ class HomeController
                 return $response->withHeader('Location', '/admin/stages')->withStatus(302);
             }
         
-            // Si c’est un user, on affiche GUUUUU
             $view = Twig::fromRequest($request);
-            return $view->render($response, 'message.twig', [
-                'message' => 'GUUUUU'
-            ]);
+            return $response->withHeader('Location', '/')->withStatus(302);
         }
         // Page d'accueil
         public function index(Request $request, Response $response): Response
@@ -61,6 +60,19 @@ class HomeController
                 'message' => 'Bienvenue dans mon projet Slim avec Twig !',
                 'session' => var_export($this->container->get('session')->get('role'),true),
                 'test' => $request->getAttribute('user')
+            ]);
+        }
+
+        public function parametres(Request $request, Response $response): Response
+        {
+            $em = $this->container->get(EntityManager::class);
+
+
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'parametres.twig', [
+                'title' => 'Settings',
+                'message' => 'Bienvenue dans mon projet Slim avec Twig !',
+                'session' => var_export($this->container->get('session')->get('role'),true),
             ]);
         }
 
