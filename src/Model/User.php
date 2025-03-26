@@ -29,8 +29,9 @@ final class User
 
     public function __construct(string $email, string $name)
     {
-        $this->name = $name;
         $this->email = $email;
+        $this->name = $name;
+
         $this->registeredAt = new DateTimeImmutable('now');
     }
 
@@ -46,7 +47,7 @@ final class User
 
     public function getName(): string
     {
-        return $this->Name;
+        return $this->name;
     }
 
 

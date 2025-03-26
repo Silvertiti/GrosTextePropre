@@ -1,40 +1,44 @@
 <?php
 
-// bootstrap.php
-
 use Doctrine\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\ORMSetup;
-use Psr\Container\ContainerInterface;
 use Symfony\Component\Cache\Adapter\ArrayAdapter;
 use Symfony\Component\Cache\Adapter\FilesystemAdapter;
 use DI\Container;
 
 require_once __DIR__ . '/vendor/autoload.php';
 
-$container = new Container(require __DIR__ . '/settings.php');
+$settings = require __DIR__ . '/settings.php';
 
-$container->set(EntityManager::class, static function (Container $c): EntityManager {
-    /** @var array $settings */
-    $settings = $c->get('settings');
+$container = new Container();
 
-    // Use the ArrayAdapter or the FilesystemAdapter depending on the value of the 'dev_mode' setting
-    // You can substitute the FilesystemAdapter for any other cache you prefer from the symfony/cache library
-    $cache = $settings['doctrine']['dev_mode'] ?
-        new ArrayAdapter() :
-        new FilesystemAdapter(directory: $settings['doctrine']['cache_dir']);
+// Injecter les settings dans le container
+$container->set('settings', $settings['settings']);
 
+// Configurer Doctrine
+$container->set(EntityManager::class, function () use ($settings) {
+    $doctrineSettings = $settings['settings']['doctrine'];
+
+    $cache = $doctrineSettings['dev_mode']
+        ? new ArrayAdapter()
+        : new FilesystemAdapter(directory: $doctrineSettings['cache_dir']);
+
+    // Créer la configuration Doctrine
     $config = ORMSetup::createAttributeMetadataConfiguration(
-        $settings['doctrine']['metadata_dirs'],
-        $settings['doctrine']['dev_mode'],
+        $doctrineSettings['metadata_dirs'],
+        $doctrineSettings['dev_mode'],
         null,
         $cache
     );
 
-    $connection = DriverManager::getConnection($settings['doctrine']['connection']);
+    // Connexion
+    $connection = DriverManager::getConnection(
+        $doctrineSettings['connection'],
+        $config 
+    );
 
     return new EntityManager($connection, $config);
 });
 
 return $container;
-
