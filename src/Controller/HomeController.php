@@ -30,6 +30,7 @@ class HomeController
         $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages')->add(AdminMiddleware::class);
         $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
         $app->get('/create', \App\Controller\HomeController::class . ':accountCreate');
+        $app->post('/create', \App\Controller\HomeController::class . ':storeAccount');
     }
 
         // Page d'accueil
@@ -120,9 +121,41 @@ class HomeController
         }
         
 
-        //Page de création de compte etudiant/pilote
+        // Page de création de compte etudiant/pilote
         public function accountCreate(Request $request, Response $response): Response {
             return $this->container->get('view')->render($response, 'account_create.twig', );
+        }
+
+        // Page de 
+        public function storeAccount(Request $request, Response $response): Response
+        {
+            // Récupérer les données du formulaire
+            $data = $request->getParsedBody();
+            
+            // Validation des données
+            $nom = $data['nom'] ?? '';
+            $email = $data['email'] ?? '';
+            $password = $data['password'] ?? '';
+
+            if (!$nom || !$email || !$password) {
+                // Si l'un des champs est vide, on retourne un message d'erreur
+                return $response->withJson(['error' => 'Tous les champs sont requis.'], 400);
+            }
+
+            // Créer un nouvel objet User
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT); // Sécuriser le mot de passe
+
+            $user = new User($email, $nom, $passwordHash); // Créer l'utilisateur avec le mot de passe haché
+
+            // Persister l'objet User dans la base de données
+            $em = $this->container->get(EntityManager::class);
+            $em->persist($user);
+            $em->flush();
+
+            // Rediriger l'utilisateur vers la page de connexion après l'inscription
+            return $response
+                ->withHeader('Location', '/')  // Rediriger vers la page de connexion
+                ->withStatus(302);
         }
 
 }
