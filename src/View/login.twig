@@ -25,7 +25,7 @@
                 onclick="window.location.href='/'"
                ></button>
               <div class="card-body text-black">
-                <form id="loginForm" action="login_process.php" method="POST">
+                <form id="loginForm" action="/login" method="POST">
                   <div class="text-center mb-4">
                     <span class="h1 fw-bold">Connexion</span>
                   </div>
@@ -34,10 +34,9 @@
                   </h5>
 
                   <!-- Message d'erreur -->
-                  <div
-                    id="errorMessage"
-                    class="alert alert-danger d-none"
-                  ></div>
+                  {% if error is defined %}
+                    <div class="alert alert-danger text-center">{{ error }}</div>
+                  {% endif %}
 
                   <div class="form-outline mb-3">
                     <input

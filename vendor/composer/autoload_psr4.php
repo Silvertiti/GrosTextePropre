@@ -46,4 +46,5 @@ return array(
     'DI\\Bridge\\Slim\\' => array($vendorDir . '/php-di/slim-bridge/src'),
     'DI\\' => array($vendorDir . '/php-di/php-di/src'),
     'App\\' => array($baseDir . '/src'),
+    '' => array($vendorDir . '/bryanjhv/slim-session/src'),
 );

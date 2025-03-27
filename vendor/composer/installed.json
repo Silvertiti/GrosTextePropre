@@ -1,6 +1,67 @@
 {
     "packages": [
         {
+            "name": "bryanjhv/slim-session",
+            "version": "4.1.2",
+            "version_normalized": "4.1.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bryanjhv/slim-session.git",
+                "reference": "475accbe38622199fa1729f3caf5a38af2cda8a2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bryanjhv/slim-session/zipball/475accbe38622199fa1729f3caf5a38af2cda8a2",
+                "reference": "475accbe38622199fa1729f3caf5a38af2cda8a2",
+                "shasum": ""
+            },
+            "require": {
+                "slim/slim": "^4.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^7.0"
+            },
+            "time": "2022-04-13T05:20:56+00:00",
+            "type": "library",
+            "installation-source": "dist",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Bryan Horna",
+                    "email": "bryanjhv@gmail.com",
+                    "homepage": "https://bryanjhv.github.io",
+                    "role": "developer"
+                }
+            ],
+            "description": "Session middleware and helper for Slim framework 4.",
+            "homepage": "https://github.com/bryanjhv/slim-session",
+            "keywords": [
+                "helper",
+                "middleware",
+                "session",
+                "slim"
+            ],
+            "support": {
+                "issues": "https://github.com/bryanjhv/slim-session/issues",
+                "source": "https://github.com/bryanjhv/slim-session.git"
+            },
+            "funding": [
+                {
+                    "url": "https://paypal.me/bryanjhv",
+                    "type": "custom"
+                }
+            ],
+            "install-path": "../bryanjhv/slim-session"
+        },
+        {
             "name": "doctrine/annotations",
             "version": "2.0.2",
             "version_normalized": "2.0.2.0",

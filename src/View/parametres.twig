@@ -1,0 +1,131 @@
+{% extends "layout.html.twig" %}
+
+{% block style %}
+  .sidebar {
+    background-color: #1e1e1e;
+    color: #fff;
+    height: 100vh;
+    padding-top: 2rem;
+  }
+  .sidebar .nav-link {
+    color: #ccc;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .sidebar .nav-link.active,
+  .sidebar .nav-link:hover {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-left: 4px solid #ff6b6b;
+  }
+  .main-content {
+    padding: 2rem;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar d-flex flex-column">
+      <a href="#profile" class="nav-link active">Gestion du Compte</a>
+
+      {% if session.role == 'admin' %}
+        <a href="#entreprise" class="nav-link">Gestion entreprises</a>
+        <a href="#stage" class="nav-link">Gestion Offres de stage</a>
+        <a href="#promotion" class="nav-link">Gestion Pilotes de promotion</a>
+        <a href="#étudiants" class="nav-link">Gestion étudiants</a>
+        <a href="#candidature" class="nav-link">Gestion Candidature</a>
+      {% endif %}
+
+    </nav>
+
+    <!-- Content -->
+    <div class="col-md-10 p-0">
+      <div class="main-content">
+        <div id="profile">
+          <div class="section-title">Profil</div>
+          <p>Modifier vos informations personnelles ici.</p>
+        </div>
+
+        {% if session.role == 'admin' %}
+        <div id="entreprise" style="display:none">
+          <div class="section-title">Gestion entreprises</div>
+          <p>Changer votre mot de passe actuel.</p>
+        </div>
+
+        <div id="stage" style="display:none">
+          <div class="section-title">Gestion Offres de stage</div>
+          <p>Gérer vos cartes de crédit et autres moyens de paiement.</p>
+        </div>
+
+        <div id="promotion" style="display:none">
+          <div class="section-title">Gestion Pilotes de promotion</div>
+          <p>Configurer vos préférences de notification.</p>
+        </div>
+
+        <div id="étudiants" style="display:none">
+          <div class="section-title">Gestion étudiants</div>
+
+          {% if students is not empty %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for student in students %}
+                    <tr>
+                      <td>{{ loop.index }}</td>
+                      <td>{{ student.getName() }}</td>
+                      <td>{{ student.getEmail() }}</td>
+                    </tr>
+                  {% endfor %}
+
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucun étudiant trouvé.</div>
+          {% endif %}
+        </div>
+
+
+        <div id="candidature" style="display:none">
+          <div class="section-title">Gestion Candidature</div>
+          <p>Activer l'authentification à deux facteurs et voir l'activité de connexion.</p>
+        </div>
+        {% endif %}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.main-content > div');
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        sections.forEach(sec => sec.style.display = 'none');
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.style.display = 'block';
+      });
+    });
+  });
+</script>
+{% endblock %}
