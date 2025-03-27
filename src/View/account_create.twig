@@ -1,0 +1,67 @@
+{% extends 'layout.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block content %}
+<section class="vh-100 d-flex justify-content-center align-items-center" style="background-color: #ff6b6b">
+  <div class="container">
+    <div class="row d-flex justify-content-center align-items-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card position-relative p-4" style="border-radius: 1rem">
+          <button class="btn-close position-absolute top-0 end-0 m-3" aria-label="Close" onclick="window.location.href='/'"></button>
+          <div class="card-body text-black">
+            <form id="registerForm" method="POST" action="/register">
+              <div class="text-center mb-4">
+                <span class="h1 fw-bold">Inscription</span>
+              </div>
+              <h5 class="fw-normal mb-4 text-center">Créez votre compte</h5>
+
+              <!-- Message d'erreur -->
+              <div id="errorMessage" class="alert alert-danger d-none"></div>
+
+              <div class="form-outline mb-3">
+                <input type="text" class="form-control form-control-lg" name="nom" placeholder="Nom" required />
+              </div>
+
+              <div class="form-outline mb-3">
+                <input type="email" class="form-control form-control-lg" name="email" placeholder="Adresse Email" required />
+              </div>
+
+              <div class="input-group mb-3">
+                <input type="password" id="password" class="form-control form-control-lg" name="password" placeholder="Mot de passe" required />
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword">👁️</button>
+              </div>
+
+              <div class="form-check mb-3">
+                <input type="radio" id="pilote" name="role" value="pilote" class="form-check-input" required />
+                <label for="pilote" class="form-check-label">Pilote</label>
+              </div>
+
+              <div class="form-check mb-3">
+                <input type="radio" id="etudiant" name="role" value="etudiant" class="form-check-input" required />
+                <label for="etudiant" class="form-check-label">Étudiant</label>
+              </div>
+
+              <div class="d-grid gap-2 mt-3">
+                <button class="btn btn-dark btn-lg" type="submit">S'inscrire</button>
+              </div>
+
+              <p class="text-center mt-3" style="color: #ff6b6b">
+                Vous avez déjà un compte ?
+                <a href="/login" style="color: #ff6b6b">Connectez-vous</a>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  document.getElementById("togglePassword").addEventListener("click", function () {
+    let passwordField = document.getElementById("password");
+    passwordField.type = passwordField.type === "password" ? "text" : "password";
+  });
+</script>
+{% endblock %}

@@ -29,7 +29,7 @@ class HomeController
         $app->post('/addjob', \App\Controller\HomeController::class . ':storeJob')->add(UserMiddleware::class);
         $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages')->add(AdminMiddleware::class);
         $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
-        
+        $app->get('/create', \App\Controller\HomeController::class . ':accountCreate');
     }
 
         // Page d'accueil
@@ -120,7 +120,9 @@ class HomeController
         }
         
 
-        
-
+        //Page de création de compte etudiant/pilote
+        public function accountCreate(Request $request, Response $response): Response {
+            return $this->container->get('view')->render($response, 'account_create.twig', );
+        }
 
 }
