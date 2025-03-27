@@ -34,11 +34,14 @@
     <!-- Sidebar -->
     <nav class="col-md-2 sidebar d-flex flex-column">
       <a href="#profile" class="nav-link active">Gestion du Compte</a>
-      <a href="#entreprise" class="nav-link">Gestion entreprises</a>
-      <a href="#stage" class="nav-link">Gestion Offres de stage</a>
-      <a href="#pilotes" class="nav-link">Gestion Pilotes de promotion</a>
-      <a href="#étudiants" class="nav-link">Gestion étudiants</a>
-      <a href="#candidature" class="nav-link">Gestion Candidature</a>
+
+      {% if session.role == 'admin' %}
+        <a href="#entreprise" class="nav-link">Gestion entreprises</a>
+        <a href="#stage" class="nav-link">Gestion Offres de stage</a>
+        <a href="#promotion" class="nav-link">Gestion Pilotes de promotion</a>
+        <a href="#étudiants" class="nav-link">Gestion étudiants</a>
+        <a href="#candidature" class="nav-link">Gestion Candidature</a>
+      {% endif %}
 
     </nav>
 
@@ -50,7 +53,8 @@
           <p>Modifier vos informations personnelles ici.</p>
         </div>
 
-        <div id="entreprises" style="display:none">
+        {% if session.role == 'admin' %}
+        <div id="entreprise" style="display:none">
           <div class="section-title">Gestion entreprises</div>
           <p>Changer votre mot de passe actuel.</p>
         </div>
@@ -67,14 +71,39 @@
 
         <div id="étudiants" style="display:none">
           <div class="section-title">Gestion étudiants</div>
-          <p>Activer l'authentification à deux facteurs et voir l'activité de connexion.</p>
+
+          {% if students is not empty %}
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                </tr>
+              </thead>
+              <tbody>
+                  {% for student in students %}
+                    <tr>
+                      <td>{{ loop.index }}</td>
+                      <td>{{ student.getName() }}</td>
+                      <td>{{ student.getEmail() }}</td>
+                    </tr>
+                  {% endfor %}
+
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucun étudiant trouvé.</div>
+          {% endif %}
         </div>
+
 
         <div id="candidature" style="display:none">
           <div class="section-title">Gestion Candidature</div>
           <p>Activer l'authentification à deux facteurs et voir l'activité de connexion.</p>
         </div>
-      
+        {% endif %}
+
       </div>
     </div>
   </div>
