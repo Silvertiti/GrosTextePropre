@@ -33,6 +33,56 @@ class HomeController
         $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
         $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
         $app->get('/parametres', \App\Controller\HomeController::class . ':parametres')->add(UserMiddleware::class);
+        $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
+
+    }
+
+    public function editStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if (!$stage) {
+            $response->getBody()->write("Stage introuvable.");
+            return $response->withStatus(404);
+        }
+
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'edit_stage.twig', [
+            'stage' => $stage
+        ]);
+    }
+
+    public function updateStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if ($stage) {
+            $data = $request->getParsedBody();
+            $stage->setTitre($data['titre']);
+            $stage->setEntreprise($data['entreprise']);
+            $stage->setDescription($data['description']);
+            $stage->setDisponible(isset($data['disponible']));
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+
+    public function deleteStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if ($stage) {
+            $em->remove($stage);
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
     public function checkRoleBeforeAccess(Request $request, Response $response): Response
@@ -40,7 +90,7 @@ class HomeController
         $role = $this->container->get('session')->get('role');
 
         if ($role === 'admin') {
-            return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+            return $response->withHeader('Location', '/stages')->withStatus(302);
         }
 
         return $response->withHeader('Location', '/')->withStatus(302);
@@ -69,14 +119,16 @@ class HomeController
         $em = $this->container->get(EntityManager::class); 
     
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
-    
+        $offres = $em->getRepository(Stage::class)->findAll();
+
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
             'session' => [
                 'role' => $session->get('role'),
                 'idUser' => $session->get('idUser')
             ],
-            'students' => $students
+            'students' => $students,
+            'offres' => $offres
         ]);
     }
     

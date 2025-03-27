@@ -59,10 +59,60 @@
           <p>Changer votre mot de passe actuel.</p>
         </div>
 
-        <div id="stage" style="display:none">
+        <div id="stage" style="display: none">
           <div class="section-title">Gestion Offres de stage</div>
-          <p>Gérer vos cartes de crédit et autres moyens de paiement.</p>
+
+          <!-- 🔍 Barre de recherche -->
+          <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un stage par titre ou entreprise...">
+          </div>
+
+          {% if offres is not empty %}
+            <table class="table table-bordered" id="stagesTable">
+              <thead>
+                <tr>
+                  <th>Titre</th>
+                  <th>Entreprise</th>
+                  <th>Disponibilité</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for offre in offres %}
+                  <tr>
+                    <td>{{ offre.getTitre() }}</td>
+                    <td>{{ offre.getEntreprise() }}</td>
+                    <td>
+                      {% if offre.isDisponible() %}
+                        <span class="badge bg-success">Disponible</span>
+                      {% else %}
+                        <span class="badge bg-secondary">Indisponible</span>
+                      {% endif %}
+                    </td>
+                    <td class="d-flex gap-2">
+                      <!-- 🔧 Modifier (à personnaliser plus tard) -->
+                      <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">
+                        Modifier
+                      </a>
+
+                      <!-- ❌ Supprimer (formulaire POST recommandé) -->
+                      <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                          Supprimer
+                        </button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucune offre disponible.</div>
+          {% endif %}
         </div>
+
+
+
 
         <div id="promotion" style="display:none">
           <div class="section-title">Gestion Pilotes de promotion</div>
@@ -128,4 +178,40 @@
     });
   });
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const links = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('.main-content > div');
+
+    links.forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+
+        links.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+
+        sections.forEach(sec => sec.style.display = 'none');
+        const target = document.querySelector(link.getAttribute('href'));
+        if (target) target.style.display = 'block';
+      });
+    });
+
+    // 🔍 Barre de recherche filtrante
+    const searchInput = document.getElementById('searchInput');
+    const rows = document.querySelectorAll('#stagesTable tbody tr');
+
+    if (searchInput) {
+      searchInput.addEventListener('keyup', function () {
+        const value = this.value.toLowerCase();
+
+        rows.forEach(row => {
+          const titre = row.cells[0].textContent.toLowerCase();
+          const entreprise = row.cells[1].textContent.toLowerCase();
+          row.style.display = (titre.includes(value) || entreprise.includes(value)) ? '' : 'none';
+        });
+      });
+    }
+  });
+</script>
+
 {% endblock %}

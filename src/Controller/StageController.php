@@ -51,7 +51,7 @@ class StageController
             $qb = $em->createQueryBuilder();
             $qb->select('s')
                 ->from(Stage::class, 's')
-                ->where('s.disponible = false');
+                ->where('s.disponible = true');
         
             if (!empty($query)) {
                 $qb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
@@ -68,7 +68,7 @@ class StageController
             $countQb = $em->createQueryBuilder()
                 ->select('COUNT(s.id)')
                 ->from(Stage::class, 's')
-                ->where('s.disponible = false');
+                ->where('s.disponible = true');
         
             if (!empty($query)) {
                 $countQb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
