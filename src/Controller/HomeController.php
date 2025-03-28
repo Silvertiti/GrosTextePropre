@@ -123,39 +123,35 @@ class HomeController
 
         // Page de création de compte etudiant/pilote
         public function accountCreate(Request $request, Response $response): Response {
-            return $this->container->get('view')->render($response, 'account_create.twig', );
+            return $this->container->get('view')->render($response, 'account_create.twig');
         }
-
-        // Page de 
+    
         public function storeAccount(Request $request, Response $response): Response
         {
-            // Récupérer les données du formulaire
             $data = $request->getParsedBody();
             
-            // Validation des données
             $nom = $data['nom'] ?? '';
             $email = $data['email'] ?? '';
             $password = $data['password'] ?? '';
-
-            if (!$nom || !$email || !$password) {
-                // Si l'un des champs est vide, on retourne un message d'erreur
+            $role = $data['role'] ?? '';
+    
+            if (!$nom || !$email || !$password || !$role) {
                 return $response->withJson(['error' => 'Tous les champs sont requis.'], 400);
             }
-
-            // Créer un nouvel objet User
-            $passwordHash = password_hash($password, PASSWORD_DEFAULT); // Sécuriser le mot de passe
-
-            $user = new User($email, $nom, $passwordHash); // Créer l'utilisateur avec le mot de passe haché
-
-            // Persister l'objet User dans la base de données
+    
+            if (!in_array($role, ['tuteur', 'etudiant'])) {
+                return $response->withJson(['error' => 'Rôle invalide.'], 400);
+            }
+    
+            $passwordHash = password_hash($password, PASSWORD_DEFAULT);
+    
+            $user = new User($email, $nom, $passwordHash, $role);
+            
+    
             $em = $this->container->get(EntityManager::class);
             $em->persist($user);
             $em->flush();
-
-            // Rediriger l'utilisateur vers la page de connexion après l'inscription
-            return $response
-                ->withHeader('Location', '/')  // Rediriger vers la page de connexion
-                ->withStatus(302);
+    
+            return $response->withHeader('Location', '/create')->withStatus(302);
         }
-
 }

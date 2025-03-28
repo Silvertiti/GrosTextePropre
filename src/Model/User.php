@@ -29,12 +29,16 @@ final class User
     #[Column(name: 'registered_at', type: 'datetimetz_immutable', nullable: false)]
     private DateTimeImmutable $registeredAt;
 
-    public function __construct(string $email, string $name, string $password)
+    #[Column(type: 'string', nullable: false)]
+    private string $role;
+
+    public function __construct(string $email, string $name, string $password, string $role)
     {
         $this->email = $email;
         $this->name = $name;
         $this->password = $password;
         $this->registeredAt = new DateTimeImmutable('now');
+        $this->role = $role;
     }
 
     public function getId(): int
@@ -58,8 +62,13 @@ final class User
         return $this->registeredAt;
     }
 
-    public function setPassword(string $password): void
+    public function getPassword(string $password): string
     {
-        $this->password = $password;
+        return $this->password;
+    }
+
+    public function getRole(string $password): string
+    {
+        $this->role;
     }
 }

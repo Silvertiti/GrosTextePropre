@@ -1,62 +1,87 @@
-{% extends 'layout.html.twig' %}
+{% extends "layout.html.twig" %}
 
-{% block title %}Inscription{% endblock %}
+{% block style %}
+  .sidebar {
+    background-color: #1e1e1e;
+    color: #fff;
+    height: 100vh;
+    padding-top: 2rem;
+  }
+  .sidebar .nav-link {
+    color: #ccc;
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  .sidebar .nav-link.active,
+  .sidebar .nav-link:hover {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-left: 4px solid #ff6b6b;
+  }
+  .main-content {
+    padding: 2rem;
+  }
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+{% endblock %}
 
 {% block content %}
-<section class="vh-100 d-flex justify-content-center align-items-center" style="background-color: #ff6b6b">
-  <div class="container">
-    <div class="row d-flex justify-content-center align-items-center">
-      <div class="col-md-8 col-lg-6">
-        <div class="card position-relative p-4" style="border-radius: 1rem">
-          <button class="btn-close position-absolute top-0 end-0 m-3" aria-label="Close" onclick="window.location.href='/'"></button>
-          <div class="card-body text-black">
-            <form id="registerForm" method="POST" action="/register">
-              <div class="text-center mb-4">
-                <span class="h1 fw-bold">Inscription</span>
-              </div>
-              <h5 class="fw-normal mb-4 text-center">Créez votre compte</h5>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <nav class="col-md-2 sidebar d-flex flex-column">
+      <a href="/create" class="nav-link active">Creation de compte</a>
+    </nav>
 
-              <!-- Message d'erreur -->
-              <div id="errorMessage" class="alert alert-danger d-none"></div>
+    <!-- Content -->
+    <div class="col-md-10 p-0">
+      <div class="main-content">
+        <div id="register">
+          <div class="section-title">Créer un compte</div>
+          <form id="registerForm" method="POST" action="/create" class="p-4 shadow rounded bg-white">
+            <div class="mb-3">
+              <label class="form-label">Nom</label>
+              <input type="text" class="form-control" name="nom" required />
+            </div>
 
-              <div class="form-outline mb-3">
-                <input type="text" class="form-control form-control-lg" name="nom" placeholder="Nom" required />
-              </div>
+            <div class="mb-3">
+              <label class="form-label">Adresse Email</label>
+              <input type="email" class="form-control" name="email" required />
+            </div>
 
-              <div class="form-outline mb-3">
-                <input type="email" class="form-control form-control-lg" name="email" placeholder="Adresse Email" required />
-              </div>
-
-              <div class="input-group mb-3">
-                <input type="password" id="password" class="form-control form-control-lg" name="password" placeholder="Mot de passe" required />
+            <div class="mb-3">
+              <label class="form-label">Mot de passe</label>
+              <div class="input-group">
+                <input type="password" id="password" class="form-control" name="password" required />
                 <button class="btn btn-outline-secondary" type="button" id="togglePassword">👁️</button>
               </div>
+            </div>
 
-              <div class="form-check mb-3">
+            <div class="mb-3">
+              <label class="form-label">Rôle</label>
+              <div class="form-check">
                 <input type="radio" id="pilote" name="role" value="pilote" class="form-check-input" required />
-                <label for="pilote" class="form-check-label">Pilote</label>
+                <label for="pilote" class="form-check-label">Tuteur</label>
               </div>
-
-              <div class="form-check mb-3">
+              <div class="form-check">
                 <input type="radio" id="etudiant" name="role" value="etudiant" class="form-check-input" required />
                 <label for="etudiant" class="form-check-label">Étudiant</label>
               </div>
+            </div>
 
-              <div class="d-grid gap-2 mt-3">
-                <button class="btn btn-dark btn-lg" type="submit">S'inscrire</button>
-              </div>
+            <div class="d-grid gap-2 mt-3">
+              <button class="btn btn-dark" type="submit">Créer</button>
+            </div>
 
-              <p class="text-center mt-3" style="color: #ff6b6b">
-                Vous avez déjà un compte ?
-                <a href="/login" style="color: #ff6b6b">Connectez-vous</a>
-              </p>
-            </form>
-          </div>
+          </form>
         </div>
       </div>
     </div>
   </div>
-</section>
+</div>
 
 <script>
   document.getElementById("togglePassword").addEventListener("click", function () {
