@@ -198,12 +198,12 @@ class HomeController
 
     public function addjob(Request $request, Response $response): Response
     {
-        $em = $this->container->get(EntityManager::class);
+        $em = $this->container->get(EntityManager::class); 
         $villes = $em->getRepository(Ville::class)->findAll();
-            
+    
         $view = Twig::fromRequest($request);
         return $view->render($response, 'create_job.twig', [
-            'title' => 'AjouterDesJobs',
+            'title' => 'Ajouter un stage',
             'villes' => $villes
         ]);
     }
@@ -220,23 +220,25 @@ class HomeController
         $stage->setTitre($data['titre']);
         $stage->setEntreprise($data['entreprise']);
         $stage->setDescription($data['description']);
+        $stage->setDateDebut(new \DateTime($data['dateDebut']));
+        $stage->setDateFin(new \DateTime($data['dateFin']));
+        $stage->setMotsCles($data['motsCles'] ?? null);
     
         $villeNom = trim($data['ville_nom'] ?? '');
-        $ville = $em->getRepository(\App\Model\Ville::class)->findOneBy(['nom' => $villeNom]);
-    
+        $ville = $em->getRepository(Ville::class)->findOneBy(['nom' => $villeNom]);
         if (!$ville) {
-            $ville = new \App\Model\Ville();
+            $ville = new Ville();
             $ville->setNom($villeNom);
             $em->persist($ville);
         }
     
         $stage->setVille($ville);
-    
         $em->persist($stage);
         $em->flush();
     
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
+    
     
 
     public function adminStages(Request $request, Response $response): Response
