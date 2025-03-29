@@ -9,6 +9,8 @@ use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Model\User;
 use App\Model\Stage;
+use App\Model\Ville;
+
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
 use App\Middlewares\TuteurMiddleware;
@@ -36,6 +38,7 @@ class HomeController
         $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
         $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
         $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
+        $app->get('/api/villes/search', [self::class, 'searchVilles']);
 
     }
 
@@ -95,6 +98,26 @@ class HomeController
 
         return $response->withHeader('Location', '/')->withStatus(302);
     }
+
+    public function searchVilles(Request $request, Response $response): Response
+    {
+        $query = $request->getQueryParams()['q'] ?? '';
+
+        $em = $this->container->get(EntityManager::class);
+        $results = $em->getRepository(\App\Model\Ville::class)
+            ->createQueryBuilder('v')
+            ->where('v.nom LIKE :q')
+            ->setParameter('q', '%' . $query . '%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult();
+
+        $payload = json_encode(array_column($results, 'nom'));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
 
     public function index(Request $request, Response $response): Response
     {
@@ -175,27 +198,46 @@ class HomeController
 
     public function addjob(Request $request, Response $response): Response
     {
+        $em = $this->container->get(EntityManager::class);
+        $villes = $em->getRepository(Ville::class)->findAll();
+            
         $view = Twig::fromRequest($request);
         return $view->render($response, 'create_job.twig', [
-            'title' => 'AjouterDesJobs'
+            'title' => 'AjouterDesJobs',
+            'villes' => $villes
         ]);
     }
+    
+    
+    
 
     public function storeJob(Request $request, Response $response): Response
     {
+        $em = $this->container->get(EntityManager::class);
         $data = $request->getParsedBody();
-
+    
         $stage = new Stage();
         $stage->setTitre($data['titre']);
         $stage->setEntreprise($data['entreprise']);
         $stage->setDescription($data['description']);
-
-        $em = $this->container->get(EntityManager::class);
+    
+        $villeNom = trim($data['ville_nom'] ?? '');
+        $ville = $em->getRepository(\App\Model\Ville::class)->findOneBy(['nom' => $villeNom]);
+    
+        if (!$ville) {
+            $ville = new \App\Model\Ville();
+            $ville->setNom($villeNom);
+            $em->persist($ville);
+        }
+    
+        $stage->setVille($ville);
+    
         $em->persist($stage);
         $em->flush();
-
+    
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
+    
 
     public function adminStages(Request $request, Response $response): Response
     {

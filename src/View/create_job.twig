@@ -1,28 +1,101 @@
 {% extends "layout.html.twig" %}
 
-{% block title %}Ajouter une offre{% endblock %}
+{% block title %}Ajouter un stage{% endblock %}
+
+{% block style %}
+  #ville-pagination {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+  .form-select-sm {
+    font-size: 0.9rem;
+    padding: 0.25rem 0.5rem;
+  }
+{% endblock %}
 
 {% block content %}
-<div class="container my-5">
-    <h1>Ajouter une offre de stage</h1>
+<div class="container my-4">
+  <h2 class="mb-3 text-center">Ajouter un stage</h2>
 
-    <form method="POST" action="/addjob">
-        <div class="mb-3">
-            <label for="titre" class="form-label">Titre</label>
-            <input type="text" class="form-control" name="titre" required>
-        </div>
+  <form method="POST" action="/addjob" class="p-3 border rounded shadow-sm bg-light">
 
-        <div class="mb-3">
-            <label for="entreprise" class="form-label">Entreprise</label>
-            <input type="text" class="form-control" name="entreprise" required>
-        </div>
+    <div class="mb-2">
+      <label for="titre" class="form-label">Titre du stage</label>
+      <input type="text" class="form-control form-control-sm" id="titre" name="titre" required>
+    </div>
 
-        <div class="mb-3">
-            <label for="description" class="form-label">Description</label>
-            <textarea class="form-control" name="description" rows="4" required></textarea>
-        </div>
+    <div class="mb-2">
+      <label for="entreprise" class="form-label">Entreprise</label>
+      <input type="text" class="form-control form-control-sm" id="entreprise" name="entreprise" required>
+    </div>
 
-        <button type="submit" class="btn btn-success">Publier l'offre</button>
-    </form>
+    <div class="mb-2">
+      <label for="description" class="form-label">Description</label>
+      <textarea class="form-control form-control-sm" id="description" name="description" rows="3" required></textarea>
+    </div>
+
+    <div class="mb-2">
+      <label for="ville_nom" class="form-label">Ville</label>
+      <select class="form-select form-select-sm" id="ville_nom" name="ville_nom" required>
+        <!-- Options injectées par JS -->
+      </select>
+      <div id="ville-pagination">
+        <button type="button" id="prevVille" class="btn btn-sm btn-outline-secondary">⬅️ Précédent</button>
+        <button type="button" id="nextVille" class="btn btn-sm btn-outline-secondary">Suivant ➡️</button>
+      </div>
+    </div>
+
+    <div class="text-end mt-3">
+      <button type="submit" class="btn btn-sm btn-primary">Ajouter</button>
+    </div>
+  </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const villes = {{ villes|map(v => v.getNom())|sort|json_encode|raw }};
+  const villeSelect = document.getElementById("ville_nom");
+  const prevBtn = document.getElementById("prevVille");
+  const nextBtn = document.getElementById("nextVille");
+
+  let currentPage = 0;
+  const perPage = 5;
+
+  function renderOptions() {
+    villeSelect.innerHTML = '<option value="" disabled selected>Choisir une ville</option>';
+
+    const start = currentPage * perPage;
+    const end = start + perPage;
+
+    villes.slice(start, end).forEach(ville => {
+      const option = document.createElement("option");
+      option.value = ville;
+      option.textContent = ville;
+      villeSelect.appendChild(option);
+    });
+
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = end >= villes.length;
+  }
+
+  prevBtn.addEventListener("click", () => {
+    if (currentPage > 0) {
+      currentPage--;
+      renderOptions();
+    }
+  });
+
+  nextBtn.addEventListener("click", () => {
+    if ((currentPage + 1) * perPage < villes.length) {
+      currentPage++;
+      renderOptions();
+    }
+  });
+
+  renderOptions();
+});
+</script>
 {% endblock %}
