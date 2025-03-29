@@ -90,12 +90,10 @@
                       {% endif %}
                     </td>
                     <td class="d-flex gap-2">
-                      <!-- 🔧 Modifier (à personnaliser plus tard) -->
                       <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">
                         Modifier
                       </a>
 
-                      <!-- ❌ Supprimer (formulaire POST recommandé) -->
                       <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
                         <button type="submit" class="btn btn-sm btn-danger">
                           Supprimer
