@@ -6,7 +6,7 @@
 <div class="container my-5">
     <h1 class="text-center mb-4">Créer un nouvel utilisateur</h1>
 
-    <form method="POST" action="/users/create">
+    <form method="POST" action="register">
         <div class="mb-3">
             <label for="name" class="form-label">Nom complet</label>
             <input type="text" class="form-control" name="name" id="name" required />
@@ -22,13 +22,13 @@
             <input type="password" class="form-control" name="password" id="password" required />
         </div>
 
-        <div class="mb-3">
-            <label for="role" class="form-label">Rôle</label>
-            <select class="form-select" name="role" id="role" required>
-                <option value="admin">Admin</option>
-                <option value="tuteur">Tuteur</option>
-                <option value="user">Élève</option>
-            </select>
+        <div class="mb-4">
+        <label for="role" class="form-label">Rôle</label>
+        <select class="form-select" id="role" name="role" required>
+            {% for role in availableRoles %}
+            <option value="{{ role }}">{{ role|capitalize }}</option>
+            {% endfor %}
+        </select>
         </div>
 
         <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
