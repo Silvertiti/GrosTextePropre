@@ -65,11 +65,14 @@ class UserController
             $response->getBody()->write("Rôle non autorisé.");
             return $response->withStatus(403);
         }
-    
-        $user = new User($data['email'], $data['name']);
-        $user->setMotDePasse(password_hash($data['password'], PASSWORD_BCRYPT));
-        $user->setRole($data['role']);
-    
+        $user = new User(
+            $data['email'],
+            $data['prenom'],
+            $data['nom'],
+            $data['password'],
+            $data['role']
+        );
+
         $em->persist($user);
         $em->flush();
     
