@@ -1,0 +1,37 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Créer un utilisateur{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Créer un nouvel utilisateur</h1>
+
+    <form method="POST" action="/users/create">
+        <div class="mb-3">
+            <label for="name" class="form-label">Nom complet</label>
+            <input type="text" class="form-control" name="name" id="name" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Adresse email</label>
+            <input type="email" class="form-control" name="email" id="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input type="password" class="form-control" name="password" id="password" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="role" class="form-label">Rôle</label>
+            <select class="form-select" name="role" id="role" required>
+                <option value="admin">Admin</option>
+                <option value="tuteur">Tuteur</option>
+                <option value="user">Élève</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
+    </form>
+</div>
+{% endblock %}

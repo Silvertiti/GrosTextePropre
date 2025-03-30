@@ -38,6 +38,9 @@ $container->set(StageController::class, function () use ($container) {
     return new StageController($container);
 });
 
+$userController = new \App\Controller\UserController($container);
+$userController->registerRoutes($app);
+
 $container->set(AdminMiddleware::class, function () use ($container) {
     return new AdminMiddleware($container);
 });
