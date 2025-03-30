@@ -44,11 +44,22 @@
         <div class="col-md-4">
           <div class="card mb-4 shadow-sm">
             <div class="card-body">
-              <h5 class="card-title">{{ offre.getTitre() }}</h5>
-              <h6 class="card-subtitle mb-2 text-muted">{{ offre.getEntreprise() }}</h6>
-              <p class="card-text">
+              <div class="d-flex justify-content-between align-items-start">
+                <div>
+                  <h5 class="card-title mb-1">{{ offre.getTitre() }}</h5>
+                  <h6 class="card-subtitle text-muted">{{ offre.getEntreprise() }}</h6>
+                </div>
+
+                {# ❤️ Bouton favori #}
+                <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" title="Ajouter aux favoris">
+                  <i class="bi bi-heart fs-5 text-danger"></i>
+                </button>
+              </div>
+
+              <p class="card-text mt-2">
                 {{ offre.getDescription()|length > 150 ? offre.getDescription()[:150] ~ '...' : offre.getDescription() }}
               </p>
+
               {% if offre.getMotsCles() %}
                 <div class="mt-2">
                   {% for mot in offre.getMotsCles()|split(',') %}
@@ -56,6 +67,7 @@
                   {% endfor %}
                 </div>
               {% endif %}
+
               <a href="#" class="btn btn-primary mt-3">Postuler</a>
             </div>
           </div>
@@ -63,6 +75,7 @@
       {% endfor %}
     </div>
 
+    {# 🔁 Pagination #}
     {% if totalPages > 1 %}
       <nav class="my-4">
         <ul class="pagination justify-content-center">
@@ -86,4 +99,18 @@
     </div>
   {% endif %}
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    document.querySelectorAll('.toggle-fav').forEach(button => {
+      button.addEventListener('click', function () {
+        const icon = this.querySelector('i');
+        icon.classList.toggle('bi-heart');
+        icon.classList.toggle('bi-heart-fill');
+      });
+    });
+  });
+</script>
 {% endblock %}
