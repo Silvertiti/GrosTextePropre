@@ -52,11 +52,10 @@
               </button>
             </div>
             <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
-
             {% if offre.getMotsCles() %}
             <div class="mt-2">
               {% for mot in offre.getMotsCles()|split(',') %}
-              <span class="badge bg-primary">{{ mot|trim }}</span>
+                <span class="badge bg-primary">{{ mot|trim }}</span>
               {% endfor %}
             </div>
             {% endif %}
