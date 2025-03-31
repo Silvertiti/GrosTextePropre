@@ -142,6 +142,7 @@ class HomeController
         $em = $this->container->get(EntityManager::class); 
     
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
+        $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']);
         $offres = $em->getRepository(Stage::class)->findAll();
 
         return $view->render($response, 'parametres.twig', [
@@ -151,6 +152,7 @@ class HomeController
                 'idUser' => $session->get('idUser')
             ],
             'students' => $students,
+            'tuteurs' => $tuteurs,
             'offres' => $offres
         ]);
     }

@@ -16,7 +16,7 @@ final class User
     private string $email;
 
     #[ORM\Column(type: 'string')]
-    private string $mot_de_passe;
+    private string $motDePasse;
 
     #[ORM\Column(type: 'string', nullable: false)]
     private string $prenom;

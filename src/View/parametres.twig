@@ -45,7 +45,6 @@
 
     </nav>
 
-    <!-- Content -->
     <div class="col-md-10 p-0">
       <div class="main-content">
         <div id="profile">
@@ -62,7 +61,6 @@
         <div id="stage" style="display: none">
           <div class="section-title">Gestion Offres de stage</div>
 
-          <!-- 🔍 Barre de recherche -->
           <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un stage par titre ou entreprise...">
           </div>
@@ -116,15 +114,16 @@
 
           
           <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un pilote par nom ...">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un pilote ...">
           </div>
 
-        {% if tuteurs is not empty %}
+          {% if tuteurs is not empty %}
             <table class="table table-striped">
             <thead>
                 <tr>
                   <th>#</th>
                   <th>Nom</th>
+                  <th>Prénom</th>
                   <th>Email</th>
                 </tr>
             </thead>
@@ -132,7 +131,8 @@
                 {% for tuteur in tuteurs %}
                     <tr>
                         <td>{{ loop.index }}</td>
-                        <td>{{ tuteur.getName() }}</td>
+                        <td>{{ tuteur.getNom() }}</td>
+                        <td>{{ tuteur.getPrenom() }}</td>
                         <td>{{ tuteur.getEmail() }}</td>
                         <td>
                             <a href="/pilote/{{ tuteur.getId() }}" class="btn btn-primary btn-sm">
@@ -152,12 +152,17 @@
         <div id="étudiants" style="display:none">
           <div class="section-title">Gestion étudiants</div>
 
+          <div class="mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un étudiant ...">
+          </div>
+
           {% if students is not empty %}
             <table class="table table-striped">
               <thead>
                 <tr>
                   <th>#</th>
                   <th>Nom</th>
+                  <th>Prénom</th>
                   <th>Email</th>
                 </tr>
               </thead>
@@ -165,8 +170,14 @@
                   {% for student in students %}
                     <tr>
                       <td>{{ loop.index }}</td>
-                      <td>{{ student.getName() }}</td>
+                      <td>{{ student.getNom() }}</td>
+                      <td>{{ student.getPrenom() }}</td>
                       <td>{{ student.getEmail() }}</td>
+                      <td>
+                            <a href="/pilote/{{ tuteur.getId() }}" class="btn btn-primary btn-sm">
+                            Afficher
+                            </a>
+                      </td>
                     </tr>
                   {% endfor %}
 
@@ -226,7 +237,6 @@
       });
     });
 
-    // 🔍 Barre de recherche filtrante
     const searchInput = document.getElementById('searchInput');
     const rows = document.querySelectorAll('#stagesTable tbody tr');
 
