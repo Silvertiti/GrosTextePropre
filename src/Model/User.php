@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-final class User
+class User // ⛔️ Avant : `final class User`
 {
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
@@ -27,9 +27,7 @@ final class User
     #[ORM\Column(type: 'string', nullable: false)]
     private string $role;
 
-
     #[ORM\Column(name: 'registered_at', type: 'datetimetz_immutable', nullable: false)]
-
     private DateTimeImmutable $registeredAt;
 
     public function __construct(string $email, string $prenom, string $nom, string $motDePasse, string $role = 'user')
@@ -42,7 +40,7 @@ final class User
         $this->registeredAt = new DateTimeImmutable('now');
     }
     
-
+    public function getFavoris(): Collection { return $this->favoris; }
     public function getId(): int { return $this->id; }
     public function getEmail(): string { return $this->email; }
     public function getRegisteredAt(): DateTimeImmutable { return $this->registeredAt; }
