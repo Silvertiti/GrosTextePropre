@@ -26,6 +26,10 @@
     margin-bottom: 1rem;
     color: #333;
   }
+  .form-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
 {% endblock %}
 
 {% block content %}
@@ -51,6 +55,39 @@
         <div id="profile">
           <div class="section-title">Profil</div>
           <p>Modifier vos informations personnelles ici.</p>
+
+          <div class="form-container">
+            <h1 class="text-center mb-4">Modifier mon compte</h1>
+
+            <form method="POST" action="/parametres">
+                <div class="mb-3">
+                    <label for="prenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" name="prenom" id="prenom" value="{{ user.prenom }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" name="nom" id="nom" value="{{ user.nom }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Adresse email</label>
+                    <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Nouveau mot de passe</label>
+                    <input type="password" class="form-control" name="password" id="password" />
+                </div>
+
+                <div class="mb-3">
+                    <label for="confirm_password" class="form-label">Confirmer le mot de passe</label>
+                    <input type="password" class="form-control" name="confirm_password" id="confirm_password" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
+          </div>
         </div>
 
         {% if session.role == 'admin' %}
@@ -109,9 +146,6 @@
           {% endif %}
         </div>
 
-
-
-
         <div id="promotion" style="display:none">
           <div class="section-title">Gestion Pilotes de promotion</div>
           <p>Configurer vos préférences de notification.</p>
@@ -137,14 +171,12 @@
                       <td>{{ student.getEmail() }}</td>
                     </tr>
                   {% endfor %}
-
               </tbody>
             </table>
           {% else %}
             <div class="alert alert-info">Aucun étudiant trouvé.</div>
           {% endif %}
         </div>
-
 
         <div id="candidature" style="display:none">
           <div class="section-title">Gestion Candidature</div>
@@ -174,40 +206,6 @@
         if (target) target.style.display = 'block';
       });
     });
-  });
-</script>
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const links = document.querySelectorAll('.nav-link');
-    const sections = document.querySelectorAll('.main-content > div');
-
-    links.forEach(link => {
-      link.addEventListener('click', e => {
-        e.preventDefault();
-
-        links.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-
-        sections.forEach(sec => sec.style.display = 'none');
-        const target = document.querySelector(link.getAttribute('href'));
-        if (target) target.style.display = 'block';
-      });
-    });
-
-    const searchInput = document.getElementById('searchInput');
-    const rows = document.querySelectorAll('#stagesTable tbody tr');
-
-    if (searchInput) {
-      searchInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
-
-        rows.forEach(row => {
-          const titre = row.cells[0].textContent.toLowerCase();
-          const entreprise = row.cells[1].textContent.toLowerCase();
-          row.style.display = (titre.includes(value) || entreprise.includes(value)) ? '' : 'none';
-        });
-      });
-    }
   });
 </script>
 
