@@ -144,7 +144,6 @@ class HomeController
             }
     
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
-    
             $user = new User($email, $nom, $passwordHash, $role);
             
     

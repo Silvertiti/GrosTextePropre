@@ -62,13 +62,13 @@ final class User
         return $this->registeredAt;
     }
 
-    public function getPassword(string $password): string
+    public function getPassword(): string
     {
         return $this->password;
     }
 
     public function getRole(string $password): string
     {
-        $this->role;
+        return $this->role;
     }
 }
