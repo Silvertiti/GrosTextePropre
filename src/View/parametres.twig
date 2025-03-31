@@ -59,13 +59,13 @@
           <p>Changer votre mot de passe actuel.</p>
         </div>
 
-        <div id="stage" style="display: none">
-          <div class="section-title">Gestion Offres de stage</div>
+      <div id="stage" style="display: none">
+        <div class="section-title">Gestion Offres de stage</div>
 
-          <!-- 🔍 Barre de recherche -->
-          <div class="mb-3">
-            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un stage par titre ou entreprise...">
-          </div>
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <input type="text" id="searchInput" class="form-control me-3" placeholder="Rechercher un stage par titre ou entreprise...">
+          <a href="/addjob" class="btn btn-warning">Ajouter</a>
+        </div>
 
           {% if offres is not empty %}
             <table class="table table-bordered" id="stagesTable">
@@ -113,18 +113,52 @@
 
 
 
-        <div id="promotion" style="display:none">
-          <div class="section-title">Gestion Pilotes de promotion</div>
-          <p>Configurer vos préférences de notification.</p>
+      <div id="promotion" style="display:none">
+        <div class="section-title">Gestion Pilotes de promotion</div>
+
+        <div class="mb-3 d-flex justify-content-between align-items-center">
+          <input type="text" id="searchTuteurInput" class="form-control me-3" placeholder="Rechercher un pilote par nom ou email...">
+          <a href="/register" class="btn btn-warning">Ajouter</a>
         </div>
+
+          {% if tuteurs is not empty %}
+            <table class="table table-bordered" id="tuteursTable">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for tuteur in tuteurs %}
+                  <tr>
+                    <td>{{ tuteur.getPrenom() }} {{ tuteur.getNom() }}</td>
+                    <td>{{ tuteur.getEmail() }}</td>
+                    <td class="d-flex gap-2">
+                      <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                      <form method="POST" action="/users/{{ tuteur.getId() }}/delete" onsubmit="return confirm('Supprimer ce tuteur ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucun tuteur trouvé.</div>
+          {% endif %}
+        </div>
+
 
         <div id="étudiants" style="display:none">
           <div class="section-title">Gestion étudiants</div>
 
-          <!-- 🔍 Barre de recherche pour étudiants -->
-          <div class="mb-3">
-            <input type="text" id="searchStudentInput" class="form-control" placeholder="Rechercher un étudiant par nom ou email...">
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <input type="text" id="searchStudentInput" class="form-control me-3" placeholder="Rechercher un étudiant par nom ou email...">
+            <a href="/register" class="btn btn-warning">Ajouter</a>
           </div>
+
 
           {% if students is not empty %}
             <table class="table table-bordered" id="studentsTable">
@@ -208,6 +242,19 @@
       studentSearchInput.addEventListener('keyup', function () {
         const value = this.value.toLowerCase();
         studentRows.forEach(row => {
+          const nom = row.cells[1].textContent.toLowerCase();
+          const email = row.cells[2].textContent.toLowerCase();
+          row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
+        });
+      });
+    }
+    const searchTuteurInput = document.getElementById('searchTuteurInput');
+    const tuteurRows = document.querySelectorAll('#tuteursTable tbody tr');
+
+    if (searchTuteurInput) {
+      searchTuteurInput.addEventListener('keyup', function () {
+        const value = this.value.toLowerCase();
+        tuteurRows.forEach(row => {
           const nom = row.cells[1].textContent.toLowerCase();
           const email = row.cells[2].textContent.toLowerCase();
           row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
