@@ -84,7 +84,7 @@ class UserController
     {
         $view = Twig::fromRequest($request);
         $session = $this->container->get('session');
-        $userId = $session->get('id');  // L'ID de l'utilisateur connecté
+        $userId = $session->get('idUser');  // L'ID de l'utilisateur connecté
         $em = $this->container->get(EntityManager::class);
         $user = $em->getRepository(User::class)->find($userId);
 
@@ -104,7 +104,7 @@ class UserController
     {
         $data = $request->getParsedBody();
         $session = $this->container->get('session');
-        $userId = $session->get('id');  // ID de l'utilisateur connecté
+        $userId = $session->get('idUser');  // ID de l'utilisateur connecté
         $em = $this->container->get(EntityManager::class);
         $user = $em->getRepository(User::class)->find($userId);
 
