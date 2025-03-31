@@ -23,69 +23,93 @@ class StageController
         $app->get('/stages', \App\Controller\StageController::class . ':stages');
     }
 
-        // Page d'accueil
-        public function index(Request $request, Response $response): Response
-        {
-            $em = $this->container->get(EntityManager::class);
-            $users = $em->getRepository(User::class)->findAll();
+    public function stages(Request $request, Response $response): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $params = $request->getQueryParams();
 
-            $view = Twig::fromRequest($request);
-            return $view->render($response, 'home.twig', [
-                'title' => 'Accueil',
-                'message' => 'Bienvenue dans mon projet Slim avec Twig !',
-                'users' => $users
-            ]);
+        $query = trim($params['q'] ?? '');
+        $selectedMotsCles = $params['motscles'] ?? [];
+        $page = isset($params['page']) ? max(1, (int)$params['page']) : 1;
+        $limit = 10;
+        $offset = ($page - 1) * $limit;
+
+        $qb = $em->createQueryBuilder();
+        $qb->select('s')
+            ->from(Stage::class, 's')
+            ->where('s.disponible = true');
+
+        // 🔍 Recherche texte
+        if (!empty($query)) {
+            $qb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
+               ->setParameter('search', '%' . $query . '%');
         }
 
-        public function stages(Request $request, Response $response): Response
-        {
-            $em = $this->container->get(EntityManager::class);
-            $params = $request->getQueryParams();
-        
-            $query = $params['q'] ?? '';
-            $page = isset($params['page']) ? max(1, (int)$params['page']) : 1;
-            $limit = 10; // nombre d'offres par page
-            $offset = ($page - 1) * $limit;
-        
-            // gestion avec Query appel de la base de donnée en fonction de la recherche
-            $qb = $em->createQueryBuilder();
-            $qb->select('s')
-                ->from(Stage::class, 's')
-                ->where('s.disponible = false');
-        
-            if (!empty($query)) {
-                $qb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
-                ->setParameter('search', '%' . $query . '%');
+        // 🔍 Filtres mots-clés
+        if (!empty($selectedMotsCles)) {
+            $orX = $qb->expr()->orX();
+            foreach ($selectedMotsCles as $index => $mot) {
+                $orX->add($qb->expr()->like('s.motsCles', ':mot' . $index));
+                $qb->setParameter('mot' . $index, '%' . $mot . '%');
             }
-        
-            $qb->setFirstResult($offset)
+            $qb->andWhere($orX);
+        }
+
+        $qb->setFirstResult($offset)
             ->setMaxResults($limit);
 
-            // Exécution de la requête → récupération des résultats
-            $offres = $qb->getQuery()->getResult();
-        
-            // Compter le total pour pagination
-            $countQb = $em->createQueryBuilder()
-                ->select('COUNT(s.id)')
+        $offres = $qb->getQuery()->getResult();
+
+        // 🧮 Pagination
+        $countQb = $em->createQueryBuilder();
+        $countQb->select('COUNT(s.id)')
                 ->from(Stage::class, 's')
-                ->where('s.disponible = false');
-        
-            if (!empty($query)) {
-                $countQb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
-                        ->setParameter('search', '%' . $query . '%');
-            }
-        
-            $total = $countQb->getQuery()->getSingleScalarResult();
-            $totalPages = ceil($total / $limit);
-        
-            // affichage avec twig
-            $view = Twig::fromRequest($request);
-            return $view->render($response, 'stages.twig', [
-                'title' => 'Offres de Stage',
-                'offres' => $offres,
-                'page' => $page,
-                'totalPages' => $totalPages,
-                'query' => $query
-            ]);
+                ->where('s.disponible = true');
+
+        if (!empty($query)) {
+            $countQb->andWhere('s.titre LIKE :search OR s.entreprise LIKE :search')
+                    ->setParameter('search', '%' . $query . '%');
         }
+
+        if (!empty($selectedMotsCles)) {
+            $orX = $countQb->expr()->orX();
+            foreach ($selectedMotsCles as $index => $mot) {
+                $orX->add($countQb->expr()->like('s.motsCles', ':mot' . $index));
+                $countQb->setParameter('mot' . $index, '%' . $mot . '%');
+            }
+            $countQb->andWhere($orX);
+        }
+
+        $total = $countQb->getQuery()->getSingleScalarResult();
+        $totalPages = ceil($total / $limit);
+
+        // 🏷 Récupérer tous les mots-clés uniques
+        $allStages = $em->getRepository(Stage::class)->findAll();
+        $motsClesList = [];
+
+        foreach ($allStages as $stage) {
+            $mots = $stage->getMotsCles();
+            if (!$mots) continue;
+
+            foreach (explode(',', $mots) as $mot) {
+                $mot = trim($mot);
+                if ($mot && !in_array($mot, $motsClesList)) {
+                    $motsClesList[] = $mot;
+                }
+            }
+        }
+
+        sort($motsClesList);
+
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'stages.twig', [
+            'title' => 'Offres de Stage',
+            'offres' => $offres,
+            'page' => $page,
+            'totalPages' => $totalPages,
+            'motsClesList' => $motsClesList,
+            'selectedMotsCles' => $selectedMotsCles,
+            'query' => $query
+        ]);
     }
+}

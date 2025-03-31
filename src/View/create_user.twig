@@ -1,0 +1,41 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Créer un utilisateur{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Créer un nouvel utilisateur</h1>
+
+    <form method="POST" action="register">
+        <div class="mb-3">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input type="text" class="form-control" name="prenom" id="prenom" required />
+        </div>
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input type="text" class="form-control" name="nom" id="nom" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Adresse email</label>
+            <input type="email" class="form-control" name="email" id="email" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Mot de passe</label>
+            <input type="password" class="form-control" name="password" id="password" required />
+        </div>
+
+        <div class="mb-4">
+        <label for="role" class="form-label">Rôle</label>
+        <select class="form-select" id="role" name="role" required>
+            {% for role in availableRoles %}
+            <option value="{{ role }}">{{ role|capitalize }}</option>
+            {% endfor %}
+        </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer l'utilisateur</button>
+    </form>
+</div>
+{% endblock %}

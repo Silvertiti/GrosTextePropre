@@ -9,6 +9,8 @@ use Psr\Container\ContainerInterface;
 use Doctrine\ORM\EntityManager;
 use App\Model\User;
 use App\Model\Stage;
+use App\Model\Ville;
+
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
 use App\Middlewares\TuteurMiddleware;
@@ -33,6 +35,57 @@ class HomeController
         $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
         $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
         $app->get('/parametres', \App\Controller\HomeController::class . ':parametres')->add(UserMiddleware::class);
+        $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
+        $app->get('/api/villes/search', [self::class, 'searchVilles']);
+
+    }
+
+    public function editStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if (!$stage) {
+            $response->getBody()->write("Stage introuvable.");
+            return $response->withStatus(404);
+        }
+
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'edit_stage.twig', [
+            'stage' => $stage
+        ]);
+    }
+
+    public function updateStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if ($stage) {
+            $data = $request->getParsedBody();
+            $stage->setTitre($data['titre']);
+            $stage->setEntreprise($data['entreprise']);
+            $stage->setDescription($data['description']);
+            $stage->setDisponible(isset($data['disponible']));
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+
+    public function deleteStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if ($stage) {
+            $em->remove($stage);
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
     public function checkRoleBeforeAccess(Request $request, Response $response): Response
@@ -40,11 +93,31 @@ class HomeController
         $role = $this->container->get('session')->get('role');
 
         if ($role === 'admin') {
-            return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+            return $response->withHeader('Location', '/stages')->withStatus(302);
         }
 
         return $response->withHeader('Location', '/')->withStatus(302);
     }
+
+    public function searchVilles(Request $request, Response $response): Response
+    {
+        $query = $request->getQueryParams()['q'] ?? '';
+
+        $em = $this->container->get(EntityManager::class);
+        $results = $em->getRepository(\App\Model\Ville::class)
+            ->createQueryBuilder('v')
+            ->where('v.nom LIKE :q')
+            ->setParameter('q', '%' . $query . '%')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getArrayResult();
+
+        $payload = json_encode(array_column($results, 'nom'));
+
+        $response->getBody()->write($payload);
+        return $response->withHeader('Content-Type', 'application/json');
+    }
+
 
     public function index(Request $request, Response $response): Response
     {
@@ -69,8 +142,8 @@ class HomeController
         $em = $this->container->get(EntityManager::class); 
     
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
-        $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']);
-    
+        $offres = $em->getRepository(Stage::class)->findAll();
+
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
             'session' => [
@@ -78,7 +151,7 @@ class HomeController
                 'idUser' => $session->get('idUser')
             ],
             'students' => $students,
-            'tuteurs' => $tuteurs
+            'offres' => $offres
         ]);
     }
     
@@ -125,27 +198,48 @@ class HomeController
 
     public function addjob(Request $request, Response $response): Response
     {
+        $em = $this->container->get(EntityManager::class); 
+        $villes = $em->getRepository(Ville::class)->findAll();
+    
         $view = Twig::fromRequest($request);
         return $view->render($response, 'create_job.twig', [
-            'title' => 'AjouterDesJobs'
+            'title' => 'Ajouter un stage',
+            'villes' => $villes
         ]);
     }
+    
+    
+    
 
     public function storeJob(Request $request, Response $response): Response
     {
+        $em = $this->container->get(EntityManager::class);
         $data = $request->getParsedBody();
-
+    
         $stage = new Stage();
         $stage->setTitre($data['titre']);
         $stage->setEntreprise($data['entreprise']);
         $stage->setDescription($data['description']);
-
-        $em = $this->container->get(EntityManager::class);
+        $stage->setDateDebut(new \DateTime($data['dateDebut']));
+        $stage->setDateFin(new \DateTime($data['dateFin']));
+        $stage->setMotsCles($data['motsCles'] ?? null);
+    
+        $villeNom = trim($data['ville_nom'] ?? '');
+        $ville = $em->getRepository(Ville::class)->findOneBy(['nom' => $villeNom]);
+        if (!$ville) {
+            $ville = new Ville();
+            $ville->setNom($villeNom);
+            $em->persist($ville);
+        }
+    
+        $stage->setVille($ville);
         $em->persist($stage);
         $em->flush();
-
+    
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
+    
+    
 
     public function adminStages(Request $request, Response $response): Response
     {

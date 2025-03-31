@@ -90,12 +90,12 @@
                       {% endif %}
                     </td>
                     <td class="d-flex gap-2">
-                      <!-- 🔧 Modifier (à personnaliser plus tard) -->
+                      
                       <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">
                         Modifier
                       </a>
 
-                      <!-- ❌ Supprimer (formulaire POST recommandé) -->
+                      
                       <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
                         <button type="submit" class="btn btn-sm btn-danger">
                           Supprimer
@@ -114,28 +114,33 @@
         <div id="promotion" style="display:none">
           <div class="section-title">Gestion Pilotes de promotion</div>
 
-          <!-- 🔍 Barre de recherche -->
+          
           <div class="mb-3">
             <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un pilote par nom ...">
           </div>
 
-          {% if tuteurs is not empty %}
+        {% if tuteurs is not empty %}
             <table class="table table-striped">
-              <thead>
+            <thead>
                 <tr>
                   <th>#</th>
                   <th>Nom</th>
                   <th>Email</th>
                 </tr>
-              </thead>
-              <tbody>
-                  {% for tuteur in tuteurs %}
+            </thead>
+            <tbody>
+                {% for tuteur in tuteurs %}
                     <tr>
-                      <td>{{ loop.index }}</td>
-                      <td>{{ tuteur.getName() }}</td>
-                      <td>{{ tuteur.getEmail() }}</td>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ tuteur.getName() }}</td>
+                        <td>{{ tuteur.getEmail() }}</td>
+                        <td>
+                            <a href="/pilote/{{ tuteur.getId() }}" class="btn btn-primary btn-sm">
+                            Afficher
+                            </a>
+                        </td>
                     </tr>
-                  {% endfor %}
+                {% endfor %}
 
               </tbody>
             </table>
