@@ -55,9 +55,48 @@
 
         {% if session.role == 'admin' %}
         <div id="entreprise" style="display:none">
-          <div class="section-title">Gestion entreprises</div>
-          <p>Changer votre mot de passe actuel.</p>
+          <div class="section-title">Gestion Entreprises</div>
+
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <input type="text" id="searchEntrepriseInput" class="form-control me-3" placeholder="Rechercher une entreprise...">
+            <a href="/entreprises/create" class="btn btn-warning">Ajouter</a>
+          </div>
+
+          {% if entreprises is not empty %}
+            <table class="table table-bordered" id="entreprisesTable">
+              <thead>
+                <tr>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Téléphone</th>
+                  <th>SIRET</th>
+                  <th>Note</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for entreprise in entreprises %}
+                  <tr>
+                    <td>{{ entreprise.getNom() }}</td>
+                    <td>{{ entreprise.getEmail() }}</td>
+                    <td>{{ entreprise.getNumeroTelephone() }}</td>
+                    <td>{{ entreprise.getSIRET() }}</td>
+                    <td>{{ entreprise.getNoteEvaluation() }}</td>
+                    <td class="d-flex gap-2">
+                      <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                      <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                      </form>
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucune entreprise trouvée.</div>
+          {% endif %}
         </div>
+
 
       <div id="stage" style="display: none">
         <div class="section-title">Gestion Offres de stage</div>
@@ -266,7 +305,23 @@
         });
       });
     }
+      document.addEventListener("DOMContentLoaded", function () {
+      const input = document.getElementById('searchEntrepriseInput');
+      const rows = document.querySelectorAll('#entreprisesTable tbody tr');
+
+      if (input) {
+        input.addEventListener('keyup', function () {
+          const value = this.value.toLowerCase();
+          rows.forEach(row => {
+            const nom = row.cells[0].textContent.toLowerCase();
+            const email = row.cells[1].textContent.toLowerCase();
+            row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
+          });
+        });
+      }
+    });
   });
+
 </script>
 
 

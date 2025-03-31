@@ -1,0 +1,43 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Créer une entreprise{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h1 class="text-center mb-4">Créer une nouvelle entreprise</h1>
+
+  <form method="POST" action="/entreprises/new">
+    <div class="mb-3">
+      <label for="siret" class="form-label">Numéro SIRET</label>
+      <input type="text" class="form-control" id="siret" name="siret" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom de l'entreprise</label>
+      <input type="text" class="form-control" id="nom" name="nom" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Adresse email</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="telephone" class="form-label">Numéro de téléphone</label>
+      <input type="text" class="form-control" id="telephone" name="telephone" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="note" class="form-label">Note d'évaluation</label>
+      <input type="number" class="form-control" id="note" name="note" min="0" max="10" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="site" class="form-label">Lien du site web</label>
+      <input type="text" class="form-control" id="site" name="site" placeholder="https://entreprise.fr">
+    </div>
+
+    <button type="submit" class="btn btn-success w-100">Créer l'entreprise</button>
+  </form>
+</div>
+{% endblock %}

@@ -53,6 +53,11 @@ $container->set(ResponseFactoryInterface::class , function () use ($app) {
     return $app->getResponseFactory();
 });
 
+
+$entrepriseController = new \App\Controller\EntrepriseController($container);
+$entrepriseController->registerRoutes($app);
+
+
 $app->add(
     new \Slim\Middleware\Session([
       'name' => 'session',
@@ -67,5 +72,6 @@ $container->set('session', function () {
 
 $container->get(StageController::class)->registerRoutes($app);
 $container->get(HomeController::class)->registerRoutes($app);
+
 
 $app->run();

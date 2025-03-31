@@ -10,6 +10,7 @@ use Doctrine\ORM\EntityManager;
 use App\Model\User;
 use App\Model\Stage;
 use App\Model\Ville;
+use App\Model\Entreprise;
 
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
@@ -144,7 +145,7 @@ class HomeController
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
         $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']); // ✅ ici on récupère les tuteurs
         $offres = $em->getRepository(Stage::class)->findAll();
-    
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();            
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
             'session' => [
@@ -153,7 +154,8 @@ class HomeController
             ],
             'students' => $students,
             'tuteurs' => $tuteurs, // ✅ on passe les tuteurs à Twig
-            'offres' => $offres
+            'offres' => $offres,
+            'entreprises' => $entreprises        
         ]);
     }
     

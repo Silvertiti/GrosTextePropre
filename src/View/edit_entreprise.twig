@@ -1,0 +1,43 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Modifier l'entreprise{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h1 class="text-center mb-4">Modifier l'entreprise</h1>
+
+  <form method="POST" action="/entreprises/{{ entreprise.getId() }}/edit">
+    <div class="mb-3">
+      <label for="siret" class="form-label">Numéro SIRET</label>
+      <input type="text" class="form-control" id="siret" name="siret" value="{{ entreprise.getSIRET() }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="nom" class="form-label">Nom de l'entreprise</label>
+      <input type="text" class="form-control" id="nom" name="nom" value="{{ entreprise.getNom() }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="email" class="form-label">Adresse email</label>
+      <input type="email" class="form-control" id="email" name="email" value="{{ entreprise.getEmail() }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="telephone" class="form-label">Numéro de téléphone</label>
+      <input type="text" class="form-control" id="telephone" name="telephone" value="{{ entreprise.getNumeroTelephone() }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="note" class="form-label">Note d'évaluation</label>
+      <input type="number" class="form-control" id="note" name="note" min="0" max="10" value="{{ entreprise.getNoteEvaluation() }}" required>
+    </div>
+
+    <div class="mb-4">
+      <label for="site" class="form-label">Lien du site web</label>
+      <input type="text" class="form-control" id="site" name="site" value="{{ entreprise.getLienSiteWeb() }}">
+    </div>
+
+    <button type="submit" class="btn btn-warning w-100">Mettre à jour l'entreprise</button>
+  </form>
+</div>
+{% endblock %}
