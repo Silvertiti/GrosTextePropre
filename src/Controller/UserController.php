@@ -9,6 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use App\Middlewares\RoleCheckMiddleware;
+use App\Middlewares\AdminMiddleware;
 
 class UserController
 {
@@ -24,6 +25,7 @@ class UserController
     {
         $app->get('/register', [UserController::class, 'createForm'])->add(RoleCheckMiddleware::class);
         $app->post('/register', [UserController::class, 'store'])->add(RoleCheckMiddleware::class);
+        $app->post('/users/{id}/delete', [UserController::class, 'delete'])->add(AdminMiddleware::class);
         
     }
     public function createForm(Request $request, Response $response): Response
@@ -78,5 +80,18 @@ class UserController
     
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
-    
+
+    public function delete(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $user = $em->getRepository(User::class)->find($args['id']);
+
+        if ($user) {
+            $em->remove($user);
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+        
 }
