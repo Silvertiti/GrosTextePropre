@@ -125,6 +125,7 @@
             <table class="table table-bordered" id="tuteursTable">
               <thead>
                 <tr>
+                  <th>Prénom</th>
                   <th>Nom</th>
                   <th>Email</th>
                   <th>Action</th>
@@ -133,10 +134,13 @@
               <tbody>
                 {% for tuteur in tuteurs %}
                   <tr>
-                    <td>{{ tuteur.getPrenom() }} {{ tuteur.getNom() }}</td>
+                    <td>{{ tuteur.getPrenom() }} </td>
+                    <td>{{ tuteur.getNom() }}</td>
                     <td>{{ tuteur.getEmail() }}</td>
                     <td class="d-flex gap-2">
-                      <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                        <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">
+                          Modifier
+                        </a>
                       <form method="POST" action="/users/{{ tuteur.getId() }}/delete" onsubmit="return confirm('Supprimer ce tuteur ?');">
                         <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
                       </form>
@@ -160,36 +164,37 @@
           </div>
 
 
-          {% if students is not empty %}
-            <table class="table table-bordered" id="studentsTable">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for student in students %}
+            {% if students is not empty %}
+              <table class="table table-bordered" id="studentsTable">
+                <thead>
                   <tr>
-                    <td>{{ student.getPrenom() }} {{ student.getNom() }}</td>
-                    <td>{{ student.getEmail() }}</td>
-                    <td class="d-flex gap-2">
-                      <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">
-                        Modifier
-                      </a>
-
-                      <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                      </form>
-                    </td>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Action</th>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          {% else %}
-            <div class="alert alert-info">Aucun étudiant trouvé.</div>
-          {% endif %}
+                </thead>
+                <tbody>
+                  {% for student in students %}
+                    <tr>
+                      <td>{{ student.getPrenom() }}</td> 
+                      <td>{{ student.getNom() }}</td>
+                      <td>{{ student.getEmail() }}</td>
+                      <td class="d-flex gap-2">
+                        <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">
+                          Modifier
+                        </a>
+                        <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                          <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                        </form>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+              <div class="alert alert-info">Aucun étudiant trouvé.</div>
+            {% endif %}
         </div>
 
 

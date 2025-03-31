@@ -1,0 +1,32 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Modifier un utilisateur{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Modifier l'utilisateur</h1>
+
+    <form method="POST" action="/users/{{ user.getId() }}/edit">
+        <div class="mb-3">
+            <label for="prenom" class="form-label">Prénom</label>
+            <input type="text" class="form-control" name="prenom" id="prenom" value="{{ user.getPrenom() }}" required />
+        </div>
+        <div class="mb-3">
+            <label for="nom" class="form-label">Nom</label>
+            <input type="text" class="form-control" name="nom" id="nom" value="{{ user.getNom() }}" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="email" class="form-label">Adresse email</label>
+            <input type="email" class="form-control" name="email" id="email" value="{{ user.getEmail() }}" required />
+        </div>
+
+        <div class="mb-3">
+            <label for="password" class="form-label">Nouveau mot de passe (laisser vide pour ne pas changer)</label>
+            <input type="password" class="form-control" name="password" id="password" />
+        </div>
+
+        <button type="submit" class="btn btn-success">Mettre à jour</button>
+    </form>
+</div>
+{% endblock %}

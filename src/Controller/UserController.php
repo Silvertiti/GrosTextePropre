@@ -26,6 +26,9 @@ class UserController
         $app->get('/register', [UserController::class, 'createForm'])->add(RoleCheckMiddleware::class);
         $app->post('/register', [UserController::class, 'store'])->add(RoleCheckMiddleware::class);
         $app->post('/users/{id}/delete', [UserController::class, 'delete'])->add(AdminMiddleware::class);
+        $app->get('/users/{id}/edit', [UserController::class, 'editForm'])->add(RoleCheckMiddleware::class);
+        $app->post('/users/{id}/edit', [UserController::class, 'update'])->add(RoleCheckMiddleware::class); 
+
         
     }
     public function createForm(Request $request, Response $response): Response
@@ -93,5 +96,56 @@ class UserController
 
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
+
+    public function editForm(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $view = Twig::fromRequest($request);
+        $session = $this->container->get('session');
+
+        $user = $em->getRepository(User::class)->find($args['id']);
+
+        if (!$user) {
+            $response->getBody()->write("Utilisateur non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $availableRoles = [];
+        $role = $session->get('role');
+
+        if ($role === 'admin') {
+            $availableRoles = ['user', 'tuteur'];
+        } elseif ($role === 'tuteur') {
+            $availableRoles = ['user'];
+        }
+
+        return $view->render($response, 'edit_user.twig', [
+            'user' => $user,
+            'availableRoles' => $availableRoles
+        ]);
+    }
+
+    public function update(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $data = $request->getParsedBody();
+        $user = $em->getRepository(User::class)->find($args['id']);
+
+        if (!$user) {
+            $response->getBody()->write("Utilisateur non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $user->setPrenom($data['prenom']);
+        $user->setNom($data['nom']);
+        $user->setEmail($data['email']);
+        if (!empty($data['password'])) {
+            $user->setMotDePasse(password_hash($data['password'], PASSWORD_BCRYPT));
+        }
+        $em->flush();
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+
         
 }
