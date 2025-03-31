@@ -7,20 +7,16 @@
   <h1 class="text-center mb-4">Offres de Stage</h1>
 
   <form method="GET" action="/stages" class="mb-4">
-    <div class="row align-items-start g-2">
-
-      {# 🔍 Recherche textuelle #}
-      <div class="col-md-5">
+    <div class="row g-2 align-items-start">
+      <div class="col-md-4">
         <input type="text" class="form-control" name="q" placeholder="Rechercher un stage..." value="{{ query|default('') }}">
       </div>
-
-      {# 🔽 Menu déroulant avec checkbox #}
       <div class="col-md-4">
-        <div class="dropdown">
-          <button class="btn btn-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Recherche par mots-clés
+        <div class="dropdown w-100">
+          <button class="btn btn-secondary dropdown-toggle w-100" type="button" data-bs-toggle="dropdown">
+            Mots-clés
           </button>
-          <div class="dropdown-menu p-2" style="max-height: 200px; overflow-y: auto; width: 100%;">
+          <div class="dropdown-menu p-2" style="max-height: 200px; overflow-y: auto;">
             {% for mot in motsClesList %}
               <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="motscles[]" value="{{ mot }}" id="mot_{{ loop.index }}" {% if mot in selectedMotsCles %}checked{% endif %}>
@@ -30,85 +26,75 @@
           </div>
         </div>
       </div>
-
-      {# 🔘 Bouton de recherche #}
-      <div class="col-md-3">
-        <button type="submit" class="btn btn-primary w-100">Rechercher</button>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Rechercher</button>
+      </div>
+      <div class="col-md-2">
+        <a href="/stages?favoris=1" class="btn btn-outline-danger w-100" title="Voir mes favoris">
+          <i class="bi bi-heart-fill"></i>
+        </a>
       </div>
     </div>
   </form>
 
-  {% if offres is not empty %}
+  {% if offres %}
     <div class="row">
       {% for offre in offres %}
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between align-items-start">
-                <div>
-                  <h5 class="card-title mb-1">{{ offre.getTitre() }}</h5>
-                  <h6 class="card-subtitle text-muted">{{ offre.getEntreprise() }}</h6>
-                </div>
-
-                {# ❤️ Bouton favori #}
-                <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" title="Ajouter aux favoris">
-                  <i class="bi bi-heart fs-5 text-danger"></i>
-                </button>
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h5>{{ offre.getTitre() }}</h5>
+                <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
               </div>
-
-              <p class="card-text mt-2">
-                {{ offre.getDescription()|length > 150 ? offre.getDescription()[:150] ~ '...' : offre.getDescription() }}
-              </p>
-
-              {% if offre.getMotsCles() %}
-                <div class="mt-2">
-                  {% for mot in offre.getMotsCles()|split(',') %}
-                    <span class="badge bg-primary">{{ mot|trim }}</span>
-                  {% endfor %}
-                </div>
-              {% endif %}
-
-              <a href="#" class="btn btn-primary mt-3">Postuler</a>
+              <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
+                <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
+              </button>
             </div>
+            <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
+            {% if offre.getMotsCles() %}
+              <div class="mt-2">
+                {% for mot in offre.getMotsCles()|split(',') %}
+                  <span class="badge bg-primary">{{ mot|trim }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+            <a href="#" class="btn btn-primary mt-3">Postuler</a>
           </div>
         </div>
       {% endfor %}
     </div>
-
-    {# 🔁 Pagination #}
-    {% if totalPages > 1 %}
-      <nav class="my-4">
-        <ul class="pagination justify-content-center">
-          {% for p in 1..totalPages %}
-            <li class="page-item {% if p == page %}active{% endif %}">
-              <a class="page-link" href="?page={{ p }}{% if query %}&q={{ query }}{% endif %}{% for tag in selectedMotsCles %}&motscles[]={{ tag }}{% endfor %}">
-                {{ p }}
-              </a>
-            </li>
-          {% endfor %}
-        </ul>
-      </nav>
-    {% endif %}
   {% else %}
-    <div class="alert alert-warning text-center">
-      {% if query or selectedMotsCles is not empty %}
-        Aucun stage trouvé pour la recherche.
-      {% else %}
-        Aucune offre de stage disponible pour le moment.
-      {% endif %}
-    </div>
+    <div class="alert alert-warning text-center">Aucune offre trouvée.</div>
   {% endif %}
 </section>
 {% endblock %}
 
 {% block scripts %}
 <script>
-  document.addEventListener("DOMContentLoaded", function () {
-    document.querySelectorAll('.toggle-fav').forEach(button => {
-      button.addEventListener('click', function () {
-        const icon = this.querySelector('i');
-        icon.classList.toggle('bi-heart');
-        icon.classList.toggle('bi-heart-fill');
+  document.querySelectorAll('.toggle-fav').forEach(button => {
+    button.addEventListener('click', function () {
+      const icon = this.querySelector('i');
+      const stageId = this.dataset.stageId;
+
+      fetch(`/favoris/${stageId}/toggle`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+        body: JSON.stringify({})
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'added') {
+          icon.classList.remove('bi-heart');
+          icon.classList.add('bi-heart-fill');
+        } else if (data.status === 'removed') {
+          icon.classList.remove('bi-heart-fill');
+          icon.classList.add('bi-heart');
+        }
+      })
+      .catch(error => {
+        alert("Erreur : vérifiez que vous êtes connecté.");
+        console.error(error);
       });
     });
   });
