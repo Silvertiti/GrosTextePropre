@@ -38,7 +38,7 @@ class HomeController
         $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
         $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
         $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
-        $app->get('/api/villes/search', [self::class, 'searchVilles']);
+        $app->get('/conditions_utilisations', \App\Controller\HomeController::class . ':conditionsUtilisations');
 
     }
 
@@ -171,7 +171,7 @@ class HomeController
         $em = $this->container->get(EntityManager::class);
         $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
 
-        if ($user) {
+        if ($user /*&& password_verify($password, $user->getMotDePasse())*/) {
             $session = $this->container->get('session');
             $session->set('idUser', $user->getId());
             $session->set('role', $user->getRole());
@@ -181,7 +181,7 @@ class HomeController
 
         $view = Twig::fromRequest($request);
         return $view->render($response, 'login.twig', [
-            'error' => 'Email incorrect ou inexistant'
+            'error' => 'Email ou mot de passe incorrect'
         ]);
     }
 
@@ -263,5 +263,11 @@ class HomeController
         }
 
         return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+    }
+
+    public function conditionsUtilisations(Request $request, Response $response): Response
+    {
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'conditions_utilisations.twig');
     }
 }

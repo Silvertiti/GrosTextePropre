@@ -1,0 +1,58 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Mentions Légales{% endblock %}
+
+{% block content %}
+<section class="vh-100 d-flex justify-content-center align-items-center" style="background-color: #ff6b6b;">
+    <div class="container">
+        <div class="row d-flex justify-content-center align-items-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card position-relative p-4" style="border-radius: 1rem;">
+                    
+                    <div class="card-body text-black">
+                        <div class="text-center mb-4">
+                            <span class="h1 fw-bold">Mentions Légales</span>
+                        </div>
+                        <p class="text-center text-muted">Dernière mise à jour : [DATE]</p>
+                        
+                        <h5 class="fw-bold mt-4">1. Informations sur l’éditeur du site</h5>
+                        <ul>
+                            <li><strong>Nom :</strong> [Nom de l’entreprise]</li>
+                            <li><strong>Adresse :</strong> [Adresse complète]</li>
+                            <li><strong>Téléphone :</strong> [Numéro]</li>
+                            <li><strong>Email :</strong> [Email]</li>
+                            <li><strong>Statut juridique :</strong> [SARL, SAS, etc.]</li>
+                            <li><strong>Numéro SIRET :</strong> [Numéro]</li>
+                        </ul>
+                        
+                        <h5 class="fw-bold mt-4">2. Hébergement du site</h5>
+                        <ul>
+                            <li><strong>Nom :</strong> [Nom de l'hébergeur]</li>
+                            <li><strong>Adresse :</strong> [Adresse complète]</li>
+                            <li><strong>Téléphone :</strong> [Numéro]</li>
+                            <li><strong>Site web :</strong> [URL]</li>
+                        </ul>
+                        
+                        <h5 class="fw-bold mt-4">3. Propriété intellectuelle</h5>
+                        <p>Le contenu du site est protégé par le droit de la propriété intellectuelle. Toute reproduction non autorisée est interdite.</p>
+                        
+                        <h5 class="fw-bold mt-4">4. Protection des données</h5>
+                        <p>Conformément au RGPD, vous avez un droit d'accès, de modification et de suppression de vos données.</p>
+                        <p>Contact : [Email de contact]</p>
+                        
+                        <h5 class="fw-bold mt-4">5. Cookies</h5>
+                        <p>Ce site utilise des cookies. Vous pouvez les désactiver via les paramètres de votre navigateur.</p>
+                        
+                        <h5 class="fw-bold mt-4">6. Responsabilité</h5>
+                        <p>L’éditeur ne peut être tenu responsable des erreurs ou omissions sur le site.</p>
+                        
+                        <h5 class="fw-bold mt-4">7. Droit applicable</h5>
+                        <p>Les présentes mentions légales sont soumises au droit français.</p>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

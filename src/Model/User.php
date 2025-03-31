@@ -56,4 +56,10 @@ final class User
     public function setRole(string $role): void { $this->role = $role; }
     public function setPrenom(string $prenom): void { $this->prenom = $prenom; }
     public function setNom(string $nom): void { $this->nom = $nom;}
+
+    public function setPassword(string $password): void
+{
+    $this->motDePasse = password_hash($password, PASSWORD_BCRYPT);
+}
+
 }

@@ -146,37 +146,35 @@
           {% endif %}
         </div>
 
-        <div id="promotion" style="display:none">
-          <div class="section-title">Gestion Pilotes de promotion</div>
-          <p>Configurer vos préférences de notification.</p>
-        </div>
+<div id="étudiants" style="display:none">
+    <div class="section-title">Gestion étudiants</div>
 
-        <div id="étudiants" style="display:none">
-          <div class="section-title">Gestion étudiants</div>
-
-          {% if students is not empty %}
-            <table class="table table-striped">
-              <thead>
+    {% if students is not empty %}
+        <table class="table table-striped">
+            <thead>
                 <tr>
-                  <th>#</th>
-                  <th>Nom</th>
-                  <th>Email</th>
+                    <th>#</th>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
                 </tr>
-              </thead>
-              <tbody>
-                  {% for student in students %}
+            </thead>
+            <tbody>
+                {% for student in students %}
                     <tr>
-                      <td>{{ loop.index }}</td>
-                      <td>{{ student.getName() }}</td>
-                      <td>{{ student.getEmail() }}</td>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ student.getPrenom() }}</td>
+                        <td>{{ student.getNom() }}</td>
+                        <td>{{ student.getEmail() }}</td>
                     </tr>
-                  {% endfor %}
-              </tbody>
-            </table>
-          {% else %}
-            <div class="alert alert-info">Aucun étudiant trouvé.</div>
-          {% endif %}
-        </div>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="alert alert-info">Aucun étudiant trouvé.</div>
+    {% endif %}
+</div>
+
 
         <div id="candidature" style="display:none">
           <div class="section-title">Gestion Candidature</div>

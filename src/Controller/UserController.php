@@ -26,6 +26,7 @@ class UserController
         $app->post('/register', [UserController::class, 'store'])->add(RoleCheckMiddleware::class);
         $app->get('/parametres/mon-compte', [UserController::class, 'editForm'])->add(RoleCheckMiddleware::class);
         $app->post('/parametres', [UserController::class, 'update'])->add(RoleCheckMiddleware::class);
+        $app->get('/parametres/liste-etudiant', UserController::class . ':gestionEtudiants');
     }
     public function createForm(Request $request, Response $response): Response
     {
@@ -126,6 +127,21 @@ class UserController
         $em->flush();
 
         return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+
+    public function gestionEtudiants(Request $request, Response $response): Response
+    {
+        // Récupérer l'EntityManager de Doctrine
+        $entityManager = $this->container->get(EntityManagerInterface::class);
+    
+        // Récupérer tous les étudiants (les utilisateurs avec le rôle 'student')
+        $etudiant = $entityManager->getRepository(User::class)->findBy(['role' => 'etudiant']);
+    
+        // Passer les étudiants à la vue
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'parametres.twig', [
+            'students' => $students
+        ]);
     }
 
 }
