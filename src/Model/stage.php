@@ -39,6 +39,9 @@ class Stage
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $motsCles = null;
 
+    #[ORM\Column(type: 'datetimetz_immutable', nullable: false)]
+    private \DateTimeImmutable $registeredAt;
+
     public function getId(): int { return $this->id; }
     public function getTitre(): string { return $this->titre; }
     public function getEntreprise(): string { return $this->entreprise; }
@@ -48,6 +51,7 @@ class Stage
     public function getDateDebut(): \DateTimeInterface { return $this->dateDebut; }
     public function getDateFin(): \DateTimeInterface { return $this->dateFin; }
     public function getMotsCles(): ?string { return $this->motsCles; }
+    public function getRegisteredAt(): \DateTimeImmutable { return $this->registeredAt; }
 
     public function setTitre(string $titre): void { $this->titre = $titre; }
     public function setEntreprise(string $entreprise): void { $this->entreprise = $entreprise; }
