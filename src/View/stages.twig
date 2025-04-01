@@ -45,26 +45,28 @@
             <div class="d-flex justify-content-between">
               <div>
                 <h5>{{ offre.getTitre() }}</h5>
-                  <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
-                </div>
-                <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
-                  <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
-                </button>
+                <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
               </div>
-              <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
-              {% if offre.getMotsCles() %}
-                <div class="mt-2">
-                  {% for mot in offre.getMotsCles()|split(',') %}
-                    <span class="badge bg-primary">{{ mot|trim }}</span>
-                  {% endfor %}
-                </div>
-              {% endif %}
-              <a href="#" class="btn btn-primary mt-3">Postuler</a>
-              <div class="d-flex justify-content-between mt-3">
-                <small class="text-muted">
-                  Publié il y a {{ offre.getRegisteredAt().diff(now).days }} jours
-                </small>
+              <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
+                <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
+              </button>
+            </div>
+            <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
+            {% if offre.getMotsCles() %}
+              <div class="mt-2">
+                {% for mot in offre.getMotsCles()|split(',') %}
+                  <span class="badge bg-primary">{{ mot|trim }}</span>
+                {% endfor %}
               </div>
+            {% endif %}
+            <!-- Aligner le bouton "Postuler" à droite -->
+            <div class="text-end mt-3">
+              <a href="#" class="btn btn-primary">Postuler</a>
+            </div>
+            <div class="d-flex justify-content-between mt-3">
+              <small class="text-muted">
+                Publié il y a {{ offre.getRegisteredAt().diff(now).days }} jours
+              </small>
             </div>
           </div>
         </div>
