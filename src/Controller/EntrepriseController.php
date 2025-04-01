@@ -45,7 +45,8 @@ class EntrepriseController
             $data['telephone'],
             $data['nom'],
             $data['note'],
-            $data['site']
+            $data['site'],
+            $data['description']
         );
     
         $em->persist($entreprise);
@@ -82,13 +83,14 @@ class EntrepriseController
     
         $data = $request->getParsedBody();
     
-        if (isset($data['siret'], $data['nom'], $data['email'], $data['telephone'], $data['note'], $data['site'])) {
+        if (isset($data['siret'], $data['nom'], $data['email'], $data['telephone'], $data['note'], $data['site'], $data['description'])) {
             $entreprise->setSIRET($data['siret']);
             $entreprise->setNom($data['nom']);
             $entreprise->setEmail($data['email']);
             $entreprise->setNumeroTelephone($data['telephone']);
             $entreprise->setNoteEvaluation($data['note']);
             $entreprise->setLienSiteWeb($data['site']);
+            $entreprise->setDescription($data['description']);
             
             $em->flush(); 
         }
