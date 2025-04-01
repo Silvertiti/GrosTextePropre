@@ -40,7 +40,7 @@ class HomeController
         $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
         $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
         $app->get('/api/villes/search', [self::class, 'searchVilles']);
-
+        $app->get('/mention', \App\Controller\HomeController::class . ':mentionLegales')->add(UserMiddleware::class);
     }
 
     public function editStage(Request $request, Response $response, array $args): Response
@@ -267,5 +267,11 @@ class HomeController
         }
 
         return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+    }
+
+    public function mentionLegales(Request $request, Response $response): Response
+    {
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'mention_legales.twig');
     }
 }
