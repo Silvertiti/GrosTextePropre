@@ -1,0 +1,22 @@
+{% extends 'base.twig' %}
+
+{% block content %}
+<h1>Mes Candidatures</h1>
+
+{% if candidatures is not empty %}
+    <ul>
+        {% for candidature in candidatures %}
+            <li>
+                Offre ID : {{ candidature.getOffreId() }} <br>
+                Date de candidature : {{ candidature.getDateCandidature().format('d/m/Y') }} <br>
+                CV : <a href="/uploads/cv/{{ candidature.getCv() }}" target="_blank">Voir le CV</a>
+                {% if candidature.getLettreMotivation() %}
+                    <br> Lettre de motivation : <a href="/uploads/ldm/{{ candidature.getLettreMotivation() }}" target="_blank">Voir la lettre</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Vous n'avez pas encore postulé à une offre.</p>
+{% endif %}
+{% endblock %}

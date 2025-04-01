@@ -8,13 +8,14 @@ use Slim\Views\TwigMiddleware;
 use App\Controller\HomeController;
 use App\Controller\StageController;
 use App\Middlewares\AdminMiddleware;
+use App\Middlewares\UserMiddleware;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use DI\Container;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
-
+date_default_timezone_set('Europe/Paris');
 $container = require __DIR__ . '/../bootstrap.php';
 
 AppFactory::setContainer($container);

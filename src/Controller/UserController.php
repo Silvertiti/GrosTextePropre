@@ -10,6 +10,7 @@ use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Views\Twig;
 use App\Middlewares\RoleCheckMiddleware;
 use App\Middlewares\AdminMiddleware;
+use App\Model\Candidature;
 
 class UserController
 {
@@ -147,5 +148,63 @@ class UserController
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
-        
+    public function submitPostuler(Request $request, Response $response, array $args): Response
+    {
+        $session = $this->container->get('session');
+        $userId = $session->get('user_id');
+        $stageId = $args['id'];
+    
+        if (!$userId) {
+            return $response->withHeader('Location', '/login')->withStatus(302);
+        }
+    
+        // Récupérer les fichiers téléchargés
+        $uploadedFiles = $request->getUploadedFiles();
+        $cvFile = $uploadedFiles['cv'] ?? null;
+        $ldmFile = $uploadedFiles['ldm'] ?? null;
+    
+        if ($cvFile && $cvFile->getError() === UPLOAD_ERR_OK) {
+            $uploadDir = __DIR__ . '/../../uploads/cvs/';
+            if (!file_exists($uploadDir)) {
+                mkdir($uploadDir, 0777, true); // Créer le répertoire si nécessaire
+            }
+    
+            $cvFileName = uniqid() . '-' . $cvFile->getClientFilename();
+            $cvFilePath = $uploadDir . $cvFileName;
+            $cvFile->moveTo($cvFilePath);
+        } else {
+            return $response->withStatus(400)->write('Erreur de téléchargement du CV.');
+        }
+    
+        // Optionnel : gérer la lettre de motivation (si téléchargée)
+        $ldmFilePath = null;
+        if ($ldmFile && $ldmFile->getError() === UPLOAD_ERR_OK) {
+            $ldmDir = __DIR__ . '/../../uploads/ldms/';
+            if (!file_exists($ldmDir)) {
+                mkdir($ldmDir, 0777, true);
+            }
+    
+            $ldmFileName = uniqid() . '-' . $ldmFile->getClientFilename();
+            $ldmFilePath = $ldmDir . $ldmFileName;
+            $ldmFile->moveTo($ldmFilePath);
+        }
+    
+        // Récupérer l'utilisateur et l'offre de stage
+        $em = $this->container->get(EntityManager::class);
+        $user = $em->getRepository(User::class)->find($userId);
+        $stage = $em->getRepository(Stage::class)->find($stageId);
+    
+        if (!$user || !$stage) {
+            return $response->withHeader('Location', '/stages')->withStatus(302);
+        }
+    
+        // Créer une candidature avec les informations
+        $candidature = new Candidature($user, $stage, $cvFilePath, $ldmFilePath);
+        $em->persist($candidature);
+        $em->flush();
+    
+        // Rediriger vers la page des stages avec un message de succès
+        return $response->withHeader('Location', '/stages?success=1')->withStatus(302);
+    }
+    
 }
