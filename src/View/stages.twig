@@ -60,7 +60,12 @@
                   {% endfor %}
                 </div>
               {% endif %}
-              <a href="/stages/{{ offre.getId() }}/postuler" class="btn btn-primary mt-3">Postuler</a>
+              <a href="#" class="btn btn-primary mt-3">Postuler</a>
+              <div class="d-flex justify-content-between mt-3">
+              <small class="text-muted">
+                Publié il y a {{ offre.getRegisteredAt().diff(now).days }} jours
+              </small>
+            </div>
             </div>
           </div>
         </div>

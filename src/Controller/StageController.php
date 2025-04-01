@@ -108,7 +108,8 @@ class StageController
             'motsClesList' => $motsClesList,
             'selectedMotsCles' => $selectedMotsCles,
             'query' => $query,
-            'favoris' => $favorisIds
+            'favoris' => $favorisIds,
+            'now' => new \DateTimeImmutable('now'),
         ]);
     }
 
