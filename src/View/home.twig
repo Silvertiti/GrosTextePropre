@@ -6,12 +6,13 @@
     padding: 0;
     overflow-x: hidden;
     width: 100%;
+    height: 100%;
   }
 
   .hero {
     background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)),
-    url("https://cdn.discordapp.com/attachments/1178992668500561932/1338493752662036541/240e0dd9cbee24c92744fce197e129a5.webp?ex=67e4a232&is=67e350b2&hm=1cbe3c6a7da4bc7298dd116fcea13504bfe51c4421daadef0056b9bb019ff09b&") no-repeat center center;
-    background-size: contain;
+    url("https://static.vecteezy.com/ti/photos-gratuite/p2/16720087-fond-d-ecran-flou-abstrait-conception-de-fond-de-couleur-pour-la-banniere-fond-de-site-web-gratuit-photo.jpg") no-repeat center center;
+    background-size: cover;  /* Remplir tout le fond de la page */
     background-repeat: no-repeat;
     color: white;
     text-align: center;
@@ -62,12 +63,12 @@
 
 {% block content %}
   <header class="hero" id="home">
-    <h1>Bienvenue sur Gros Texte</h1>
+    <h1>Bienvenue sur Stage Inc</h1>
     <p>Une plateforme pour gérer vos stages et opportunités professionnelles.</p>
     <a href="/offres" class="btn btn-attractive">
       Découvrir nos offres <span>🚀</span>
     </a>
   </header>
 
-      {{ session.role }}
+  {{ session.role }}
 {% endblock %}
