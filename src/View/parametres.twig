@@ -71,6 +71,7 @@
                   <th>Téléphone</th>
                   <th>SIRET</th>
                   <th>Note</th>
+                  <th>Vues</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -82,6 +83,7 @@
                     <td>{{ entreprise.getNumeroTelephone() }}</td>
                     <td>{{ entreprise.getSIRET() }}</td>
                     <td>{{ entreprise.getNoteEvaluation() }}</td>
+                    <td>{{ entreprise.getVues() }}</td>
                     <td class="d-flex gap-2">
                       <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
                       <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
@@ -112,6 +114,7 @@
                 <tr>
                   <th>Titre</th>
                   <th>Entreprise</th>
+                  <th>Vues</th>
                   <th>Disponibilité</th>
                   <th>Action</th>
                 </tr>
@@ -121,6 +124,8 @@
                   <tr>
                     <td>{{ offre.getTitre() }}</td>
                     <td>{{ offre.getEntreprise() }}</td>
+                    <td>{{ offre.getVues() }}</td>
+
                     <td>
                       {% if offre.isDisponible() %}
                         <span class="badge bg-success">Disponible</span>

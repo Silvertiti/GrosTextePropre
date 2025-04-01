@@ -30,7 +30,6 @@ class StageViews
     {
         $this->stage = $stage;
         $this->user = $user;
-        $this->viewedAt = new \DateTime(); // Valeur par défaut
     }
 
     public function getId(): int
