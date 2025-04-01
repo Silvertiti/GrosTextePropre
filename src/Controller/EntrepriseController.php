@@ -28,8 +28,8 @@ class EntrepriseController
         $app->get('/entreprises/{id}/edit', [self::class, 'editForm']);
         $app->post('/entreprises/{id}/edit', [self::class, 'update']);
         $app->post('/entreprises/{id}/delete', [self::class, 'delete']);
-        $app->post('/entreprises/new', [self::class, 'store']);
-        $app->get('/entreprise/vues', [self::class, 'vuesStages']); // 👈 Route vers le tableau des vues
+        $app->post('/entreprises/new', [EntrepriseController::class, 'store']);
+        $app->get('/entreprise/vues', [self::class, 'vuesStages']);
     }
 
     public function createForm(Request $request, Response $response): Response
@@ -115,7 +115,6 @@ class EntrepriseController
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
-    // ✅ Page entreprise qui affiche toutes les vues de ses stages
     public function vuesStages(Request $request, Response $response): Response
     {
         $em = $this->container->get(EntityManager::class);

@@ -76,6 +76,20 @@ class StageController
         $qb->setFirstResult($offset)->setMaxResults($limit);
         $offres = $qb->getQuery()->getResult();
 
+        // Comptage des vues
+        $vuesParStage = [];
+        foreach ($offres as $offre) {
+            $count = $em->createQueryBuilder()
+                ->select('COUNT(v.id)')
+                ->from(StageViews::class, 'v')
+                ->where('v.stage = :stage')
+                ->setParameter('stage', $offre)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $vuesParStage[$offre->getId()] = $count;
+        }
+
         // Mots-clés
         $allStages = $em->getRepository(Stage::class)->findAll();
         $motsClesList = [];
@@ -91,7 +105,7 @@ class StageController
         }
         sort($motsClesList);
 
-        // Favoris actuels
+        // Favoris
         $favorisIds = [];
         if ($userId) {
             $favoris = $em->getRepository(Favori::class)->findBy(['user' => $userId]);
@@ -100,6 +114,7 @@ class StageController
             }
         }
 
+        // 🔔 Message flash
         $flashMessage = $session->get('flash_message');
         $session->delete('flash_message');
 
@@ -115,6 +130,7 @@ class StageController
             'favoris' => $favorisIds,
             'now' => new \DateTimeImmutable('now'),
             'flash_message' => $flashMessage,
+            'vuesParStage' => $vuesParStage
         ]);
     }
 
@@ -167,7 +183,6 @@ class StageController
         $userId = $session->get('idUser');
         $user = $em->getRepository(User::class)->find($userId);
 
-        // Enregistrement de la vue manuelle unique
         if ($user) {
             $viewRepo = $em->getRepository(StageViews::class);
             $existingView = $viewRepo->findOneBy(['stage' => $stage, 'user' => $user]);
@@ -176,9 +191,6 @@ class StageController
                 $vue = new StageViews($stage, $user);
                 $vue->setViewedAt(new \DateTime());
                 $em->persist($vue);
-
-                // Incrémentation manuelle dans la table Stage
-                $stage->setVues($stage->getVues() + 1);
                 $em->flush();
             }
         }
@@ -222,6 +234,7 @@ class StageController
 
             $fullPath = $uploadDirectory . $fileName;
             $uploadedFile->moveTo($fullPath);
+
             $filePath = '/uploads/cv/' . $fileName;
         } else {
             $response->getBody()->write("Aucun fichier CV téléchargé.");
@@ -236,6 +249,7 @@ class StageController
         $em->flush();
 
         $session->set('flash_message', 'Votre candidature a bien été envoyée.');
+
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 }
