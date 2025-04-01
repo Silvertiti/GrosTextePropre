@@ -1,22 +1,44 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
-    <a class="navbar-brand" href="#">GROS TEXTE</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+    <!-- Logo/Titre -->
+    <a class="navbar-brand fw-bold fs-3" href="#">GROS TEXTE</a> <!-- Taille augmentée -->
+
+    <!-- Bouton hamburger -->
+    <button 
+      class="navbar-toggler" 
+      type="button" 
+      data-bs-toggle="collapse" 
+      data-bs-target="#navbarMobile"
+      aria-controls="navbarMobile"
+      aria-expanded="false"
+    >
       <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav me-auto">
-        <li class="nav-item"><a class="nav-link" href="/">Accueil</a></li>
-        <li class="nav-item"><a class="nav-link" href="#services">Informations</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">Offres</a></li>
-        <li class="nav-item"><a class="nav-link" href="#about">Paramètres</a></li>
+
+    <!-- Menu -->
+    <div class="collapse navbar-collapse" id="navbarMobile">
+      <!-- Partie gauche -->
+      <ul class="navbar-nav me-auto mb-3 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link fs-5 px-3 py-2" href="/">Accueil</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 px-3 py-2" href="#services">Informations</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 px-3 py-2" href="stages">Offres</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link fs-5 px-3 py-2" href="parametres">Paramètres</a>
+        </li>
       </ul>
+
+      <!-- Partie droite (icône) -->
       <ul class="navbar-nav">
         <li class="nav-item">
-          <a class="nav-link" href="login.html">
-            <svg class="icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor"
-                 class="bi bi-archive-fill" viewBox="0 0 16 16">
-              <path d="..."/>
+          <a class="nav-link fs-4 px-3 py-2" href="login.html">
+            <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
+              <path d="..."/> <!-- Conservez votre path d'origine -->
             </svg>
           </a>
         </li>
@@ -24,3 +46,50 @@
     </div>
   </div>
 </nav>
+
+<style>
+/* ----- Menu Mobile Plein Écran ----- */
+@media (max-width: 991.98px) {
+  .navbar-collapse {
+    position: fixed;
+    top: 70px; /* Ajustez selon la hauteur de votre navbar */
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ff6b6b;
+    z-index: 1000;
+    padding: 2rem;
+    overflow-y: auto;
+  }
+
+  .navbar-nav {
+    flex-direction: column !important;
+  }
+
+  .nav-item {
+    margin: 1rem 0;
+    text-align: center;
+  }
+
+  .nav-link {
+    font-size: 1.8rem !important; /* Taille XXL sur mobile */
+    padding: 1rem !important;
+  }
+
+  .icon {
+    width: 40px !important; /* Agrandir l'icône */
+    height: 40px !important;
+  }
+}
+
+/* Couleurs */
+.navbar {
+  background-color: #ff6b6b !important;
+}
+.nav-link {
+  color: white !important;
+}
+.nav-link:hover {
+  color: #ffc107 !important;
+}
+</style>

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="fr">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <title>{% block title %}Plateforme de Stages - Accueil{% endblock %}</title>
@@ -40,7 +40,7 @@
     }
 
     .navbar-brand {
-      font-size: clamp(1.25rem, 5vw, 1.5rem); /* Taille fluide */
+      font-size: clamp(1.25rem, 5vw, 1.5rem);
       font-weight: bold;
       color: var(--text-light) !important;
     }
@@ -56,20 +56,48 @@
     .nav-link {
       color: var(--text-light) !important;
       padding: 0.5rem 1rem !important;
-      font-size: 1rem;
     }
 
     .nav-link:hover {
       color: var(--secondary-color) !important;
     }
 
-    /* Menu mobile : empiler les liens */
+    /* ----- Menu Mobile (Plein écran) ----- */
     @media (max-width: 991.98px) {
-      .navbar-nav {
-        padding-top: 1rem;
+      .navbar-collapse {
+        position: fixed;
+        top: 60px;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: var(--primary-color);
+        z-index: 1000;
+        overflow-y: auto;
+        padding: 2rem 0;
       }
+
+      .navbar-nav {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 100%;
+      }
+
       .nav-item {
+        margin: 1rem 0;
         text-align: center;
+      }
+
+      .nav-link {
+        font-size: 1.5rem !important;
+        padding: 1rem !important;
+        display: inline-block;
+      }
+
+      .navbar-collapse.collapsing,
+      .navbar-collapse.show {
+        transition: all 0.3s ease;
       }
     }
 
@@ -80,12 +108,6 @@
       width: 100%;
       max-width: 1400px;
       margin: 0 auto;
-    }
-
-    /* Conteneurs responsives */
-    .container-fluid {
-      padding-left: 1rem;
-      padding-right: 1rem;
     }
 
     @media (min-width: 768px) {
@@ -101,7 +123,7 @@
       text-align: center;
       padding: var(--footer-padding) 0;
       width: 100%;
-      margin-top: auto; /* S'assure qu'il reste en bas */
+      margin-top: auto;
     }
 
     .footer-bottom {
@@ -113,7 +135,6 @@
 
     /* ----- Optimisation Mobile ----- */
     @media (max-width: 575.98px) {
-      /* Réduire les espacements sur très petits écrans */
       main {
         padding: 1rem 0.75rem;
       }
@@ -125,9 +146,14 @@
 
     {% block style %}{% endblock %}
     </style>
-  </head>
-  <body>
-    {% include 'partials/header.html.twig' %}
+</head>
+<body>
+    {% include 'partials/header.html.twig' with {
+        navbar_items: [
+            { path: '#', label: 'Accueil' },
+            { path: '#', label: 'Offres' }
+        ]
+    } %}
 
     <main class="container-fluid">
       {% block content %}{% endblock %}
@@ -138,5 +164,5 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
     {% block scripts %}{% endblock %}
-  </body>
+</body>
 </html>
