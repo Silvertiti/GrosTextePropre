@@ -47,7 +47,7 @@ class Entreprise  // Retirer "final"
     
 
     public function getId(): int { return $this->id; }
-    public function getSIRET(): string { return $this->SIRET; }
+    public function getSIRET(): string { return $this->SIRET ?? ''; }
     public function getEmail(): string { return $this->email; }
     public function getNumeroTelephone(): string { return $this->numeroTelephone; }
     public function getRegisteredAt(): DateTimeImmutable { return $this->registeredAt; }
