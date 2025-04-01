@@ -160,10 +160,27 @@ class StageController
             $response->getBody()->write("Stage non trouvé.");
             return $response->withStatus(404);
         }
-    
+
         $ville = $stage->getVille();  
         $villeNom = ($ville === null || $ville->getId() == 0) ? "Ville non précisée" : $ville->getNom();  
-    
+
+        // ➕ Enregistrement de la vue si elle n'existe pas déjà
+        $session = $this->container->get('session');
+        $userId = $session->get('idUser');
+        $user = $em->getRepository(User::class)->find($userId);
+
+        if ($user) {
+            $viewRepo = $em->getRepository(StageViews::class);
+            $existingView = $viewRepo->findOneBy(['stage' => $stage, 'user' => $user]);
+
+            if (!$existingView) {
+                $vue = new StageViews($stage, $user);
+                $vue->setViewedAt(new \DateTime());
+                $em->persist($vue);
+                $em->flush();
+            }
+        }
+
         $view = Twig::fromRequest($request);
         return $view->render($response, 'postuler_stage.twig', [
             'stage' => $stage,
@@ -181,50 +198,46 @@ class StageController
             $response->getBody()->write("Stage non trouvé.");
             return $response->withStatus(404);
         }
-    
+
         $session = $this->container->get('session');
         $userId = $session->get('idUser');
         $user = $em->getRepository(User::class)->find($userId);
-    
+
         if (!$user) {
             $response->getBody()->write("Utilisateur non trouvé.");
             return $response->withStatus(404);
         }
-    
+
         $uploadedFile = $request->getUploadedFiles()['cv'] ?? null;
-    
+
         if ($uploadedFile && $uploadedFile->getError() === UPLOAD_ERR_OK) {
             $fileName = uniqid('cv_', true) . '.' . pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-    
-            // ✅ Chemin absolu correct vers le dossier cv
             $uploadDirectory = $_SERVER['DOCUMENT_ROOT'] . '/GrosTextePropre/public/uploads/cv/';
-    
+
             if (!is_dir($uploadDirectory)) {
                 mkdir($uploadDirectory, 0777, true);
             }
-    
+
             $fullPath = $uploadDirectory . $fileName;
             $uploadedFile->moveTo($fullPath);
-    
             error_log("CV enregistré à : " . $fullPath);
-    
+
             $filePath = '/uploads/cv/' . $fileName;
         } else {
             $response->getBody()->write("Aucun fichier CV téléchargé.");
             return $response->withStatus(400);
         }
-    
+
         $candidature = new Candidature($stage, $user, $data['motivation']);
         $candidature->setCvPath($filePath);
         $candidature->setCreatedAt(new \DateTime()); 
-    
+
         $em->persist($candidature);
         $em->flush();
-    
+
         // 🔔 Ajout message flash
         $session->set('flash_message', 'Votre candidature a bien été envoyée.');
-    
+
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
-    
 }
