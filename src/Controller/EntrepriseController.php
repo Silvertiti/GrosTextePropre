@@ -34,26 +34,26 @@ class EntrepriseController
         return $view->render($response, 'create_entreprise.twig');
     }
     
-    public function store(Request $request, Response $response): Response
-    {
-        $data = $request->getParsedBody();
-        $em = $this->container->get(EntityManager::class);
-    
-        $entreprise = new Entreprise(
-            $data['siret'],
-            $data['email'],
-            $data['telephone'],
-            $data['nom'],
-            $data['note'],
-            $data['site'],
-            $data['description']
-        );
-    
-        $em->persist($entreprise);
-        $em->flush();
-    
-        return $response->withHeader('Location', '/parametres')->withStatus(302);
-    }
+        public function store(Request $request, Response $response): Response
+        {
+            $data = $request->getParsedBody();
+            $em = $this->container->get(EntityManager::class);
+        
+            $entreprise = new Entreprise(
+                $data['siret'],
+                $data['email'],
+                $data['telephone'],
+                $data['nom'],
+                $data['note'],
+                $data['site'],
+                $data['description']
+            );
+        
+            $em->persist($entreprise);
+            $em->flush();
+        
+            return $response->withHeader('Location', '/parametres')->withStatus(302);
+        }
 
     public function editForm(Request $request, Response $response, array $args): Response
     {

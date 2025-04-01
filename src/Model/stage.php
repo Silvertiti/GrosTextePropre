@@ -43,9 +43,6 @@ class Stage
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $motsCles = null;
 
-    #[ORM\Column(type: "string", nullable: true)]
-    private ?string $= null;
-
     #[ORM\Column(type: 'datetimetz_immutable', nullable: false)]
     private \DateTimeImmutable $registeredAt;
 
