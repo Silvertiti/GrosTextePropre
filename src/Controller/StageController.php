@@ -11,6 +11,7 @@ use App\Model\Stage;
 use App\Model\User;
 use App\Model\Favori;
 use App\Model\Candidature;
+use App\Model\StageViews;
 
 class StageController
 {
