@@ -473,3 +473,4 @@ composer.lock
 *.css.map
 *.sass.map
 *.scss.map
+GrosTextePropre/public/uploads/cv/*.pdf
