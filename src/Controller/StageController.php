@@ -27,6 +27,7 @@ class StageController
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
         $app->get('/stages/{id}/postuler', \App\Controller\StageController::class . ':postuler');
         $app->post('/stages/{id}/postuler', \App\Controller\StageController::class . ':postulerStage');
+        $app->get('/parametres/stages', [StageController::class, 'parametres']);
     }
 
     public function stages(Request $request, Response $response): Response
@@ -207,10 +208,30 @@ class StageController
     
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
-    
-    
-    
 
-    
+        public function parametres(Request $request, Response $response): Response
+        {
+            $em = $this->container->get(EntityManager::class);
+            $session = $this->container->get('session');
+            $userId = $session->get('idUser');
+        
+            if (!$userId) {
+                return $response->withStatus(403)->write("Utilisateur non connecté.");
+            }
+        
+            $user = $em->getRepository(User::class)->find($userId);
+            if (!$user) {
+                return $response->withStatus(404)->write("Utilisateur non trouvé.");
+            }
+        
+            // Récupérer les favoris
+            $favoris = $em->getRepository(Favori::class)->findBy(['user' => $user]);
+            $stagesFavoris = array_map(fn($f) => $f->getStage(), $favoris);
+        
+            $view = Twig::fromRequest($request);
+            return $view->render($response, 'parametres.twig', [
+                'favoris' => $stagesFavoris
+            ]);
+        }
 
 }

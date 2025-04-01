@@ -41,6 +41,7 @@
         <a href="#promotion" class="nav-link">Gestion Pilotes de promotion</a>
         <a href="#étudiants" class="nav-link">Gestion étudiants</a>
         <a href="#candidature" class="nav-link">Gestion Candidature</a>
+        <a href="#statistique" class="nav-link">Statistiques</a>
       {% endif %}
 
     </nav>
@@ -243,6 +244,39 @@
         </div>
         {% endif %}
 
+        <div id="statistique" style="display:none">
+          <div class="section-title">Liste des candidatures</div>
+          <p>Retrouvez ici toutes les candidatures envoyées.</p>
+          {% if candidatures is not empty %}
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Titre</th>
+                        <th>Entreprise</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stage in favoris %}
+                        <tr>
+                            <td>{{ stage.getTitre() }}</td>
+                            <td>{{ stage.getEntreprise() }}</td>
+                            <td>
+                                <form method="POST" action="/favoris/{{ stage.getId() }}/toggle">
+                                    <button type="submit" class="btn btn-sm btn-danger">
+                                        Retirer des favoris
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucune candidature trouvée.</div>
+          {% endif %}
+        </div>
+
       </div>
     </div>
   </div>
@@ -321,6 +355,8 @@
       }
     });
   });
+
+  
 
 </script>
 
