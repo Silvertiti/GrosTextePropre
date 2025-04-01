@@ -91,7 +91,7 @@ class StageController
         }
         sort($motsClesList);
 
-        // Récupération des favoris actuels
+        // Favoris actuels
         $favorisIds = [];
         if ($userId) {
             $favoris = $em->getRepository(Favori::class)->findBy(['user' => $userId]);
@@ -100,7 +100,6 @@ class StageController
             }
         }
 
-        // 🔔 Message flash
         $flashMessage = $session->get('flash_message');
         $session->delete('flash_message');
 
@@ -164,11 +163,11 @@ class StageController
         $ville = $stage->getVille();  
         $villeNom = ($ville === null || $ville->getId() == 0) ? "Ville non précisée" : $ville->getNom();  
 
-        // ➕ Enregistrement de la vue si elle n'existe pas déjà
         $session = $this->container->get('session');
         $userId = $session->get('idUser');
         $user = $em->getRepository(User::class)->find($userId);
 
+        // Enregistrement de la vue manuelle unique
         if ($user) {
             $viewRepo = $em->getRepository(StageViews::class);
             $existingView = $viewRepo->findOneBy(['stage' => $stage, 'user' => $user]);
@@ -177,6 +176,9 @@ class StageController
                 $vue = new StageViews($stage, $user);
                 $vue->setViewedAt(new \DateTime());
                 $em->persist($vue);
+
+                // Incrémentation manuelle dans la table Stage
+                $stage->setVues($stage->getVues() + 1);
                 $em->flush();
             }
         }
@@ -220,8 +222,6 @@ class StageController
 
             $fullPath = $uploadDirectory . $fileName;
             $uploadedFile->moveTo($fullPath);
-            error_log("CV enregistré à : " . $fullPath);
-
             $filePath = '/uploads/cv/' . $fileName;
         } else {
             $response->getBody()->write("Aucun fichier CV téléchargé.");
@@ -235,9 +235,7 @@ class StageController
         $em->persist($candidature);
         $em->flush();
 
-        // 🔔 Ajout message flash
         $session->set('flash_message', 'Votre candidature a bien été envoyée.');
-
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 }

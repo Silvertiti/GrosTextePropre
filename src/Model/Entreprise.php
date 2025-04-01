@@ -38,6 +38,10 @@ final class Entreprise
 
     private DateTimeImmutable $registeredAt;
 
+    #[ORM\Column(type: 'integer')]
+    private int $vues = 0;
+
+
     public function __construct(string $SIRET, string $email, string $numeroTelephone, string $nom, string $noteEvaluation, string $lienSiteWeb, string $description)
     {
         $this->SIRET = $SIRET;
@@ -68,4 +72,15 @@ final class Entreprise
     public function setNoteEvaluation(string $noteEvaluation): void { $this->noteEvaluation = $noteEvaluation; }
     public function setLienSiteWeb(string $lienSiteWeb): void { $this->lienSiteWeb = $lienSiteWeb; }
     public function setDescription(string $description): void { $this->description = $description; }
+
+    public function getVues(): int
+{
+    return $this->vues;
+}
+
+public function setVues(int $vues): void
+{
+    $this->vues = $vues;
+}
+
 }

@@ -46,6 +46,10 @@ class Stage
     #[ORM\Column(type: 'datetimetz_immutable', nullable: false)]
     private \DateTimeImmutable $registeredAt;
 
+    #[ORM\Column(type: 'integer')]
+    private int $vues = 0;
+
+
     public function getId(): int { return $this->id; }
     public function getTitre(): string { return $this->titre; }
     public function getEntreprise(): string { return $this->entreprise; }
@@ -67,5 +71,16 @@ class Stage
     public function setDateFin(\DateTimeInterface $dateFin): void { $this->dateFin = $dateFin; }
     public function setMotsCles(?string $motsCles): void { $this->motsCles = $motsCles; }
     public function setDescription2(string $description2): void { $this->description2 = $description2;  }
+
+    public function getVues(): int
+{
+    return $this->vues;
+}
+
+public function setVues(int $vues): void
+{
+    $this->vues = $vues;
+}
+
 }
 
