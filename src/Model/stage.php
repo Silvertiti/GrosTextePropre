@@ -23,10 +23,6 @@ class Stage
     #[ORM\Column(type: "text")]
     private string $description;
 
-    
-    #[ORM\Column(type: "text")]
-    private string $description2;
-
     #[ORM\ManyToOne(targetEntity: Ville::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Ville $ville;
@@ -59,7 +55,6 @@ class Stage
     public function getDateDebut(): \DateTimeInterface { return $this->dateDebut; }
     public function getDateFin(): \DateTimeInterface { return $this->dateFin; }
     public function getMotsCles(): ?string { return $this->motsCles; }
-    public function getDescription2(): string { return $this->description2; }
     public function getRegisteredAt(): \DateTimeImmutable { return $this->registeredAt; }
 
     public function setTitre(string $titre): void { $this->titre = $titre; }
@@ -70,7 +65,6 @@ class Stage
     public function setDateDebut(\DateTimeInterface $dateDebut): void { $this->dateDebut = $dateDebut; }
     public function setDateFin(\DateTimeInterface $dateFin): void { $this->dateFin = $dateFin; }
     public function setMotsCles(?string $motsCles): void { $this->motsCles = $motsCles; }
-    public function setDescription2(string $description2): void { $this->description2 = $description2;  }
 
     public function getVues(): int
 {
