@@ -10,15 +10,13 @@ use App\Model\Stage;
 #[ORM\Table(name: 'favoris')]
 class Favori
 {
-    #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private int $id;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'favoris')]
     #[ORM\JoinColumn(nullable: false)]
     private User $user;
 
+    #[ORM\Id]
     #[ORM\ManyToOne(targetEntity: Stage::class)]
     #[ORM\JoinColumn(nullable: false)]
     private Stage $stage;
