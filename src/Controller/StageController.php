@@ -24,9 +24,9 @@ class StageController
     public function registerRoutes($app)
     {
         $app->get('/stages', [self::class, 'stages']);
+        $app->get('/stages/{id}/postuler', [self::class, 'postuler']);
+        $app->post('/stages/{id}/postuler', [self::class, 'postulerStage']);
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
-        $app->get('/stages/{id}/postuler', \App\Controller\StageController::class . ':postuler');
-        $app->post('/stages/{id}/postuler', \App\Controller\StageController::class . ':postulerStage');
     }
 
     public function stages(Request $request, Response $response): Response
@@ -99,6 +99,10 @@ class StageController
             }
         }
 
+        // 🔔 Message flash
+        $flashMessage = $session->get('flash_message');
+        $session->delete('flash_message');
+
         $view = Twig::fromRequest($request);
         return $view->render($response, 'stages.twig', [
             'title' => 'Offres de Stage',
@@ -110,6 +114,7 @@ class StageController
             'query' => $query,
             'favoris' => $favorisIds,
             'now' => new \DateTimeImmutable('now'),
+            'flash_message' => $flashMessage,
         ]);
     }
 
@@ -144,21 +149,19 @@ class StageController
         $response->getBody()->write(json_encode(['status' => $status]));
         return $response->withHeader('Content-Type', 'application/json');
     }
+
     public function postuler(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);
         $stage = $em->getRepository(Stage::class)->find($args['id']);  
         
         if (!$stage) {
-            return $response->withStatus(404)->write("Stage non trouvé.");
+            $response->getBody()->write("Stage non trouvé.");
+            return $response->withStatus(404);
         }
     
         $ville = $stage->getVille();  
-        if ($ville === null || $ville->getId() == 0) {
-            $villeNom = "Ville non précisée";  
-        } else {
-            $villeNom = $ville->getNom();  
-        }
+        $villeNom = ($ville === null || $ville->getId() == 0) ? "Ville non précisée" : $ville->getNom();  
     
         $view = Twig::fromRequest($request);
         return $view->render($response, 'postuler_stage.twig', [
@@ -166,7 +169,7 @@ class StageController
             'villeNom' => $villeNom  
         ]);
     }
-    
+
     public function postulerStage(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);
@@ -174,7 +177,8 @@ class StageController
         
         $stage = $em->getRepository(Stage::class)->find($args['id']);
         if (!$stage) {
-            return $response->withStatus(404)->getBody()->write("Stage non trouvé.");
+            $response->getBody()->write("Stage non trouvé.");
+            return $response->withStatus(404);
         }
     
         $session = $this->container->get('session');
@@ -182,35 +186,44 @@ class StageController
         $user = $em->getRepository(User::class)->find($userId);
     
         if (!$user) {
-            return $response->withStatus(404)->getBody()->write("Utilisateur non trouvé.");
+            $response->getBody()->write("Utilisateur non trouvé.");
+            return $response->withStatus(404);
         }
     
         $uploadedFile = $request->getUploadedFiles()['cv'] ?? null;
     
-        if ($uploadedFile) {
+        if ($uploadedFile && $uploadedFile->getError() === UPLOAD_ERR_OK) {
             $fileName = uniqid('cv_', true) . '.' . pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
-            
-            $uploadDirectory = __DIR__ . '/../../../public/uploads/cvs/';
-            
-            $uploadedFile->moveTo($uploadDirectory . $fileName);
-            
-            $filePath = '/uploads/cvs/' . $fileName;
+    
+            // ✅ Chemin absolu correct vers le dossier cv
+            $uploadDirectory = $_SERVER['DOCUMENT_ROOT'] . '/GrosTextePropre/public/uploads/cv/';
+    
+            if (!is_dir($uploadDirectory)) {
+                mkdir($uploadDirectory, 0777, true);
+            }
+    
+            $fullPath = $uploadDirectory . $fileName;
+            $uploadedFile->moveTo($fullPath);
+    
+            error_log("CV enregistré à : " . $fullPath);
+    
+            $filePath = '/uploads/cv/' . $fileName;
         } else {
-            return $response->withStatus(400)->getBody()->write("Aucun fichier CV téléchargé.");
+            $response->getBody()->write("Aucun fichier CV téléchargé.");
+            return $response->withStatus(400);
         }
     
         $candidature = new Candidature($stage, $user, $data['motivation']);
-        $candidature->setCvPath($filePath); 
+        $candidature->setCvPath($filePath);
+        $candidature->setCreatedAt(new \DateTime()); 
     
         $em->persist($candidature);
         $em->flush();
     
+        // 🔔 Ajout message flash
+        $session->set('flash_message', 'Votre candidature a bien été envoyée.');
+    
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
     
-    
-    
-
-    
-
 }

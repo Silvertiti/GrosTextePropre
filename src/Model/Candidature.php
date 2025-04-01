@@ -24,7 +24,11 @@ class Candidature
     #[ORM\Column(type: "text")]
     private string $motivation;
 
-    private ?string $cvPath = null;  
+    #[ORM\Column(type: "datetime")]
+    private \DateTime $createdAt;
+
+    #[ORM\Column(type: "string", nullable: true)]
+    private ?string $cvPath = null;
 
     public function __construct(Stage $stage, User $user, string $motivation)
     {
@@ -33,12 +37,14 @@ class Candidature
         $this->motivation = $motivation;
     }
 
-
-    public function setCvPath(string $cvPath): void {$this->cvPath = $cvPath;}
-    
-    public function getCvPath(): ?string { return $this->cvPath;}
     public function getId(): int { return $this->id; }
     public function getStage(): Stage { return $this->stage; }
     public function getUser(): User { return $this->user; }
     public function getMotivation(): string { return $this->motivation; }
+
+    public function getCreatedAt(): \DateTime { return $this->createdAt; }
+    public function setCreatedAt(\DateTime $createdAt): void { $this->createdAt = $createdAt; }
+
+    public function getCvPath(): ?string { return $this->cvPath; }
+    public function setCvPath(string $cvPath): void { $this->cvPath = $cvPath; }
 }
