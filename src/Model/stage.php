@@ -55,11 +55,8 @@ class Stage
     public function getDateDebut(): \DateTimeInterface { return $this->dateDebut; }
     public function getDateFin(): \DateTimeInterface { return $this->dateFin; }
     public function getMotsCles(): ?string { return $this->motsCles; }
-<<<<<<< HEAD
     public function getDescription2(): string { return $this->description2; }
-=======
     public function getRegisteredAt(): \DateTimeImmutable { return $this->registeredAt; }
->>>>>>> 4d3ef87d76b9d78e4604c440e49bd521790157e6
 
     public function setTitre(string $titre): void { $this->titre = $titre; }
     public function setEntreprise(string $entreprise): void { $this->entreprise = $entreprise; }
@@ -69,9 +66,6 @@ class Stage
     public function setDateDebut(\DateTimeInterface $dateDebut): void { $this->dateDebut = $dateDebut; }
     public function setDateFin(\DateTimeInterface $dateFin): void { $this->dateFin = $dateFin; }
     public function setMotsCles(?string $motsCles): void { $this->motsCles = $motsCles; }
-<<<<<<< HEAD
     public function setDescription2(string $description2): void { $this->description2 = $description2;  }
 }
-=======
-}
->>>>>>> 4d3ef87d76b9d78e4604c440e49bd521790157e6
+

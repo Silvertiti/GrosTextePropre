@@ -80,11 +80,9 @@ class EntrepriseController
             return $response->withStatus(404);
         }
     
-        $data = $request->getParsedBody(); // Récupérer les données envoyées via le formulaire
+        $data = $request->getParsedBody();
     
-        // Vérifie que les données sont bien présentes dans le tableau $data
         if (isset($data['siret'], $data['nom'], $data['email'], $data['telephone'], $data['note'], $data['site'])) {
-            // Met à jour les données de l'entreprise
             $entreprise->setSIRET($data['siret']);
             $entreprise->setNom($data['nom']);
             $entreprise->setEmail($data['email']);
@@ -92,10 +90,10 @@ class EntrepriseController
             $entreprise->setNoteEvaluation($data['note']);
             $entreprise->setLienSiteWeb($data['site']);
             
-            $em->flush(); // Enregistre les changements dans la base de données
+            $em->flush(); 
         }
     
-        return $response->withHeader('Location', '/parametres')->withStatus(302); // Redirige après la modification
+        return $response->withHeader('Location', '/parametres')->withStatus(302); 
     }
     
 
