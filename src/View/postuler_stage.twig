@@ -12,7 +12,6 @@
             <h6 class="card-subtitle text-muted">{{ stage.getEntreprise() }}</h6>
             <p><strong> Description: </strong><class="card-text">{{ stage.getDescription() }}</p>
             <p><strong> Description détaillé: </strong><class="card-text">{{ stage.getDescription2() }}</p>
-            <!-- Afficher la ville ou un message alternatif si la ville n'est pas définie -->
             <p><strong>Lieu: </strong>{{ villeNom }}</p>  
             {% if stage.getMotsCles() %}
                 <p><strong>Mot clés: </strong>{{ stage.getMotsCles() }}</p>
