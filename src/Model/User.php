@@ -12,7 +12,7 @@ final class User
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
 
-    #[ORM\Column(type: 'string', unique: true, nullable: false)]
+    #[ORM\Column(type: 'string', unique: true, nullable: false, length: 200)]
     private string $email;
 
     #[ORM\Column(type: 'string')]

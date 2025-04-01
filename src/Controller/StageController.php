@@ -109,7 +109,8 @@ class StageController
             'totalPages' => $totalPages,
             'motsClesList' => $motsClesList,
             'selectedMotsCles' => $selectedMotsCles,
-            'query' => $query
+            'query' => $query,
+            'now' => new \DateTimeImmutable('now'),
         ]);
     }
 }

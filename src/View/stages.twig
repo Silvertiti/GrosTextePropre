@@ -60,6 +60,12 @@
             </div>
             {% endif %}
             <a href="#" class="btn btn-primary mt-auto align-self-end">Postuler</a>
+            <div class="d-flex justify-content-between mt-3">
+              <small class="text-muted">
+                Publié il y a {{ offre.getRegisteredAt().diff(now).days }} jours
+              </small>
+            </div>
+
           </div>
         </div>
       {% endfor %}
