@@ -40,31 +40,51 @@
   {% if offres %}
     <div class="row">
       {% for offre in offres %}
-        <div class="col-md-4">
-          <div class="card mb-4 shadow-sm">
-            <div class="card-body">
-              <div class="d-flex justify-content-between">
-                <div>
-                  <h5>{{ offre.getTitre() }}</h5>
-                  <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
-                </div>
-                <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
-                  <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
-                </button>
+        <div class="card mb-4 shadow-sm">
+          <div class="card-body d-flex flex-column">
+            <div class="d-flex justify-content-between">
+              <div>
+                <h5>{{ offre.getTitre() }}</h5>
+                <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
               </div>
-              <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
-              {% if offre.getMotsCles() %}
-                <div class="mt-2">
-                  {% for mot in offre.getMotsCles()|split(',') %}
-                    <span class="badge bg-primary">{{ mot|trim }}</span>
-                  {% endfor %}
-                </div>
-              {% endif %}
-              <a href="#" class="btn btn-primary mt-3">Postuler</a>
+              <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
+                <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
+              </button>
+            </div>
+            <p class="card-text">{{ offre.getDescription()[:150] ~ (offre.getDescription()|length > 150 ? '...' : '') }}</p>
+
+            {% if offre.getMotsCles() %}
+              <div class="mt-2">
+                {% for mot in offre.getMotsCles()|split(',') %}
+                  <span class="badge bg-primary">{{ mot|trim }}</span>
+                {% endfor %}
+              </div>
+            {% endif %}
+
+            <div class="text-end mt-3">
+              <a href="/stages/{{ offre.getId() }}/postuler" class="btn btn-primary">Postuler</a>
+            </div>
+
+            <div class="d-flex justify-content-between mt-3">
+              <small class="text-muted">
+                Publié il y a {{ offre.getRegisteredAt().diff(now).days }} jours
+              </small>
+              <small class="text-muted">
+                👁️ {{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}
+              </small>
             </div>
           </div>
         </div>
       {% endfor %}
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+      {% if page > 1 %}
+        <a href="?page={{ page - 1 }}&q={{ query|default('') }}&motscles={{ selectedMotsCles|join(',') }}" class="btn btn-outline-primary">Précédent</a>
+      {% endif %}
+      {% if offres|length == 10 %}
+        <a href="?page={{ page + 1 }}&q={{ query|default('') }}&motscles={{ selectedMotsCles|join(',') }}" class="btn btn-outline-primary">Suivant</a>
+      {% endif %}
     </div>
   {% else %}
     <div class="alert alert-warning text-center">Aucune offre trouvée.</div>

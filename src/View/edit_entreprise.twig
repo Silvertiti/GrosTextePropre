@@ -23,6 +23,11 @@
     </div>
 
     <div class="mb-3">
+      <label for="description" class="form-label">description</label>
+      <input type="text" class="form-control" id="description" name="description" value="{{ entreprise.getDescription() }}" required>
+    </div>
+
+    <div class="mb-3">
       <label for="telephone" class="form-label">Numéro de téléphone</label>
       <input type="text" class="form-control" id="telephone" name="telephone" value="{{ entreprise.getNumeroTelephone() }}" required>
     </div>

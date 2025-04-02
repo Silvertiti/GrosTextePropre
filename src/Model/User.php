@@ -1,13 +1,15 @@
 <?php
 
 namespace App\Model;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'users')]
-class User // ⛔️ Avant : `final class User`
+class User 
 {
     #[ORM\Id, ORM\Column(type: 'integer'), ORM\GeneratedValue(strategy: 'AUTO')]
     private int $id;
@@ -29,6 +31,11 @@ class User // ⛔️ Avant : `final class User`
 
     #[ORM\Column(name: 'registered_at', type: 'datetimetz_immutable', nullable: false)]
     private DateTimeImmutable $registeredAt;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favori::class)]
+        private Collection $favoris;
+
+
 
     public function __construct(string $email, string $prenom, string $nom, string $motDePasse, string $role = 'user')
     {

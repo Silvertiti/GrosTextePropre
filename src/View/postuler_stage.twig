@@ -1,0 +1,38 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Candidature au stage{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+    <h1 class="text-center mb-4">Candidature pour le stage: {{ stage.getTitre() }}</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">{{ stage.getTitre() }}</h5>
+            <h6 class="card-subtitle text-muted">{{ stage.getEntreprise() }}</h6>
+            <p><strong> Description: </strong><class="card-text">{{ stage.getDescription() }}</p>
+            <p><strong>Lieu: </strong>{{ villeNom }}</p>  
+            {% if stage.getMotsCles() %}
+                <p><strong>Mot clés: </strong>{{ stage.getMotsCles() }}</p>
+            {% endif %}
+            <p><strong>Disponibilité: </strong>{{ stage.isDisponible() ? 'Disponible' : 'Indisponible' }}</p>
+            <p><strong>Date de début : </strong>{{ stage.getDateDebut()|date('d/m/Y') }}</p>
+            <p><strong>Date de fin : </strong>{{ stage.getDateFin()|date('d/m/Y') }}</p>
+        </div>
+    </div>
+
+    <form method="POST" action="/stages/{{ stage.getId() }}/postuler" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="motivation" class="form-label">Motivation</label>
+            <textarea class="form-control" id="motivation" name="motivation" rows="4" required></textarea>
+        </div>
+
+        <div class="mb-3">
+            <label for="cv" class="form-label">Téléchargez votre CV</label>
+            <input type="file" class="form-control" id="cv" name="cv" accept=".pdf,.doc,.docx,.txt" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">Envoyer ma candidature</button>
+    </form>
+</div>
+{% endblock %}

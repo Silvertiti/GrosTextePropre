@@ -30,12 +30,19 @@ final class Entreprise
     #[ORM\Column(type: 'integer')]
     private string $lienSiteWeb;
 
+    #[ORM\Column(type: 'string')]
+    private ?string $description = null;
+
 
     #[ORM\Column(name: 'registered_at', type: 'datetimetz_immutable', nullable: false)]
 
     private DateTimeImmutable $registeredAt;
 
-    public function __construct(string $SIRET, string $email, string $numeroTelephone, string $nom, string $noteEvaluation, string $lienSiteWeb)
+    #[ORM\Column(type: 'integer')]
+    private int $vues = 0;
+
+
+    public function __construct(string $SIRET, string $email, string $numeroTelephone, string $nom, string $noteEvaluation, string $lienSiteWeb, string $description)
     {
         $this->SIRET = $SIRET;
         $this->email = $email;
@@ -44,6 +51,7 @@ final class Entreprise
         $this->noteEvaluation = $noteEvaluation;
         $this->registeredAt = new DateTimeImmutable('now');
         $this->lienSiteWeb = $lienSiteWeb;
+        $this->description = $description;
     }
     
 
@@ -55,6 +63,7 @@ final class Entreprise
     public function getNom(): string { return $this->nom; }
     public function getNoteEvaluation(): string { return $this->noteEvaluation; }
     public function getLienSiteWeb(): string { return $this->lienSiteWeb; }
+    public function getDescription(): string { return $this->description; }
     
     public function setSIRET(string $SIRET): void { $this->SIRET = $SIRET; }
     public function setEmail(string $email): void { $this->email = $email; }
@@ -62,4 +71,16 @@ final class Entreprise
     public function setNom(string $nom): void { $this->nom = $nom;}
     public function setNoteEvaluation(string $noteEvaluation): void { $this->noteEvaluation = $noteEvaluation; }
     public function setLienSiteWeb(string $lienSiteWeb): void { $this->lienSiteWeb = $lienSiteWeb; }
+    public function setDescription(string $description): void { $this->description = $description; }
+
+    public function getVues(): int
+{
+    return $this->vues;
+}
+
+public function setVues(int $vues): void
+{
+    $this->vues = $vues;
+}
+
 }

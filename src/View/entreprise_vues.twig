@@ -1,0 +1,47 @@
+{% extends "layout.html.twig" %}
+
+{% block title %}Statistiques des Offres de Stage{% endblock %}
+
+{% block content %}
+<div class="container my-5">
+  <h1 class="mb-4 text-center">Vues de mes Offres de Stage</h1>
+
+  {% if vuesStages is not empty %}
+    <table class="table table-striped table-bordered">
+      <thead>
+        <tr>
+          <th>Titre du Stage</th>
+          <th>Entreprise</th>
+          <th>Nombre de vues</th>
+          <th>Utilisateurs ayant vu</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for item in vuesStages %}
+          <tr>
+            <td>{{ item.stage.getTitre() }}</td>
+            <td>{{ item.stage.getEntreprise() }}</td>
+            <td><strong>{{ item.total }}</strong></td>
+            <td>
+              {% if item.vues is not empty %}
+                <ul class="mb-0">
+                  {% for vue in item.vues %}
+                    <li>
+                      {{ vue.getUser().getNom() }} {{ vue.getUser().getPrenom() }} —
+                      {{ vue.getViewedAt().format('d/m/Y à H:i') }}
+                    </li>
+                  {% endfor %}
+                </ul>
+              {% else %}
+                <em>Aucune vue</em>
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="alert alert-info text-center">Aucune offre trouvée pour cette entreprise.</div>
+  {% endif %}
+</div>
+{% endblock %}

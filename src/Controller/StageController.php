@@ -10,6 +10,8 @@ use Doctrine\ORM\EntityManager;
 use App\Model\Stage;
 use App\Model\User;
 use App\Model\Favori;
+use App\Model\Candidature;
+use App\Model\StageViews;
 
 class StageController
 {
@@ -23,6 +25,8 @@ class StageController
     public function registerRoutes($app)
     {
         $app->get('/stages', [self::class, 'stages']);
+        $app->get('/stages/{id}/postuler', [self::class, 'postuler']);
+        $app->post('/stages/{id}/postuler', [self::class, 'postulerStage']);
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
     }
 
@@ -65,14 +69,28 @@ class StageController
             if (count($stageIds) > 0) {
                 $qb->andWhere($qb->expr()->in('s.id', $stageIds));
             } else {
-                $qb->andWhere('1 = 0'); // Aucun favoris
+                $qb->andWhere('1 = 0'); 
             }
         }
 
         $qb->setFirstResult($offset)->setMaxResults($limit);
         $offres = $qb->getQuery()->getResult();
 
-        // 🔁 Mots-clés
+        // Comptage des vues
+        $vuesParStage = [];
+        foreach ($offres as $offre) {
+            $count = $em->createQueryBuilder()
+                ->select('COUNT(v.id)')
+                ->from(StageViews::class, 'v')
+                ->where('v.stage = :stage')
+                ->setParameter('stage', $offre)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $vuesParStage[$offre->getId()] = $count;
+        }
+
+        // Mots-clés
         $allStages = $em->getRepository(Stage::class)->findAll();
         $motsClesList = [];
         foreach ($allStages as $stage) {
@@ -87,7 +105,7 @@ class StageController
         }
         sort($motsClesList);
 
-        // ❤️ Récupération des favoris actuels
+        // Favoris
         $favorisIds = [];
         if ($userId) {
             $favoris = $em->getRepository(Favori::class)->findBy(['user' => $userId]);
@@ -95,6 +113,10 @@ class StageController
                 $favorisIds[] = $f->getStage()->getId();
             }
         }
+
+        // 🔔 Message flash
+        $flashMessage = $session->get('flash_message');
+        $session->delete('flash_message');
 
         $view = Twig::fromRequest($request);
         return $view->render($response, 'stages.twig', [
@@ -105,7 +127,10 @@ class StageController
             'motsClesList' => $motsClesList,
             'selectedMotsCles' => $selectedMotsCles,
             'query' => $query,
-            'favoris' => $favorisIds
+            'favoris' => $favorisIds,
+            'now' => new \DateTimeImmutable('now'),
+            'flash_message' => $flashMessage,
+            'vuesParStage' => $vuesParStage
         ]);
     }
 
@@ -139,5 +164,92 @@ class StageController
 
         $response->getBody()->write(json_encode(['status' => $status]));
         return $response->withHeader('Content-Type', 'application/json');
+    }
+
+    public function postuler(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);  
+        
+        if (!$stage) {
+            $response->getBody()->write("Stage non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $ville = $stage->getVille();  
+        $villeNom = ($ville === null || $ville->getId() == 0) ? "Ville non précisée" : $ville->getNom();  
+
+        $session = $this->container->get('session');
+        $userId = $session->get('idUser');
+        $user = $em->getRepository(User::class)->find($userId);
+
+        if ($user) {
+            $viewRepo = $em->getRepository(StageViews::class);
+            $existingView = $viewRepo->findOneBy(['stage' => $stage, 'user' => $user]);
+
+            if (!$existingView) {
+                $vue = new StageViews($stage, $user);
+                $vue->setViewedAt(new \DateTime());
+                $em->persist($vue);
+                $em->flush();
+            }
+        }
+
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'postuler_stage.twig', [
+            'stage' => $stage,
+            'villeNom' => $villeNom  
+        ]);
+    }
+
+    public function postulerStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $data = $request->getParsedBody();
+        
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+        if (!$stage) {
+            $response->getBody()->write("Stage non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $session = $this->container->get('session');
+        $userId = $session->get('idUser');
+        $user = $em->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            $response->getBody()->write("Utilisateur non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $uploadedFile = $request->getUploadedFiles()['cv'] ?? null;
+
+        if ($uploadedFile && $uploadedFile->getError() === UPLOAD_ERR_OK) {
+            $fileName = uniqid('cv_', true) . '.' . pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
+            $uploadDirectory = $_SERVER['DOCUMENT_ROOT'] . '/GrosTextePropre/public/uploads/cv/';
+
+            if (!is_dir($uploadDirectory)) {
+                mkdir($uploadDirectory, 0777, true);
+            }
+
+            $fullPath = $uploadDirectory . $fileName;
+            $uploadedFile->moveTo($fullPath);
+
+            $filePath = '/uploads/cv/' . $fileName;
+        } else {
+            $response->getBody()->write("Aucun fichier CV téléchargé.");
+            return $response->withStatus(400);
+        }
+
+        $candidature = new Candidature($stage, $user, $data['motivation']);
+        $candidature->setCvPath($filePath);
+        $candidature->setCreatedAt(new \DateTime()); 
+
+        $em->persist($candidature);
+        $em->flush();
+
+        $session->set('flash_message', 'Votre candidature a bien été envoyée.');
+
+        return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 }

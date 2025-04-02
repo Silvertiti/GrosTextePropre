@@ -14,6 +14,8 @@ use Psr\Http\Server\RequestHandlerInterface as RequestHandler;
 use DI\Container;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
+use App\Middlewares\UserMiddleware;
+date_default_timezone_set('Europe/Paris');
 
 $container = require __DIR__ . '/../bootstrap.php';
 
@@ -72,6 +74,5 @@ $container->set('session', function () {
 
 $container->get(StageController::class)->registerRoutes($app);
 $container->get(HomeController::class)->registerRoutes($app);
-
 
 $app->run();
