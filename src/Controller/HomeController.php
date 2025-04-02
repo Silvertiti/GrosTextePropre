@@ -282,11 +282,9 @@ class HomeController
         $stage->setDateFin(new DateTime($data['dateFin']));
         $stage->setMotsCles($data['motsCles'] ?? null);
     
-        // 🔎 Vérifie si la ville existe déjà
         $villeNom = $data['ville_nom'] ?? null;
         $ville = $em->getRepository(Ville::class)->findOneBy(['nom' => $villeNom]);
     
-        // ➕ Si la ville n'existe pas, on la crée
         if (!$ville) {
             $ville = new Ville();
             $ville->setNom($villeNom);
@@ -305,8 +303,6 @@ class HomeController
             ->withHeader('Location', '/stages')
             ->withStatus(302);
     }
-    
-    
     
 
     public function adminStages(Request $request, Response $response): Response

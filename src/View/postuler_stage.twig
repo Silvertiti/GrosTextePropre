@@ -9,7 +9,9 @@
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ stage.getTitre() }}</h5>
-            <h6 class="card-subtitle text-muted">{{ stage.getEntreprise() }}</h6>
+            <h6 class="card-subtitle text-muted">
+                {{ entreprisesParId[stage.getEntreprise()]|default('Entreprise inconnue') }}
+            </h6>
             <p><strong> Description: </strong><class="card-text">{{ stage.getDescription() }}</p>
             <p><strong>Lieu: </strong>{{ villeNom }}</p>  
             {% if stage.getMotsCles() %}
