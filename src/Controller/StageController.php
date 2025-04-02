@@ -12,6 +12,7 @@ use App\Model\User;
 use App\Model\Favori;
 use App\Model\Candidature;
 use App\Model\StageViews;
+use App\Model\Entreprise;
 
 class StageController
 {
@@ -114,7 +115,14 @@ class StageController
             }
         }
 
-        // 🔔 Message flash
+        // Entreprises associées (ID → nom)
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();
+        $entreprisesParId = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId[$e->getId()] = $e->getNom();
+        }
+
+        // Flash message
         $flashMessage = $session->get('flash_message');
         $session->delete('flash_message');
 
@@ -130,7 +138,8 @@ class StageController
             'favoris' => $favorisIds,
             'now' => new \DateTimeImmutable('now'),
             'flash_message' => $flashMessage,
-            'vuesParStage' => $vuesParStage
+            'vuesParStage' => $vuesParStage,
+            'entreprisesParId' => $entreprisesParId
         ]);
     }
 

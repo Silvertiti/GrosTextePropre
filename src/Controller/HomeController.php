@@ -209,7 +209,8 @@ class HomeController
         $view = Twig::fromRequest($request);
         return $view->render($response, 'create_job.twig', [
             'title' => 'Ajouter un stage',
-            'villes' => $villes
+            'villes' => $villes,
+            'entreprises' => $em->getRepository(Entreprise::class)->findAll(),
         ]);
     }
     
