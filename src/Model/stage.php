@@ -42,7 +42,6 @@ class Stage
     
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
-    
     #[ORM\Column(type: 'integer')]
     private int $vues = 0;
 
@@ -55,7 +54,6 @@ class Stage
     public function getDateDebut(): \DateTimeInterface { return $this->dateDebut; }
     public function getDateFin(): \DateTimeInterface { return $this->dateFin; }
     public function getMotsCles(): ?string { return $this->motsCles; }
-    public function getRegisteredAt(): \DateTimeImmutable { return $this->registeredAt; }
 
     public function setTitre(string $titre): void { $this->titre = $titre; }
     public function setEntreprise(string $entreprise): void { $this->entreprise = $entreprise; }

@@ -11,8 +11,13 @@
       <input type="text" class="form-control" id="titre" name="titre" required>
     </div>
     <div class="mb-3">
-      <label for="entreprise" class="form-label">Entreprise</label>
-      <input type="text" class="form-control" id="entreprise" name="entreprise" required>
+      <label for="entreprise" class="form-label">Entreprise</label> 
+      <select class="form-control" id="entreprise" name="entreprise" required>
+        <option value="">Choisir une entreprise</option>
+        {% for entreprise in entreprises %}
+            <h6 class="text-muted">{{ offre.entrepriseNom }}</h6>
+        {% endfor %}
+      </select>
     </div>
     <div class="mb-3">
       <label for="description" class="form-label">Description</label>
