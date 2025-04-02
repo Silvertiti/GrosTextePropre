@@ -11,6 +11,7 @@ use App\Model\User;
 use App\Model\Stage;
 use App\Model\Ville;
 use App\Model\Entreprise;
+use DateTime;
 
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
@@ -215,7 +216,9 @@ class HomeController
     
     
 
-    public function storeJob(Request $request, Response $response): Response
+
+
+    public function storejob(Request $request, Response $response): Response
     {
         $em = $this->container->get(EntityManager::class);
         $data = $request->getParsedBody();
@@ -224,12 +227,15 @@ class HomeController
         $stage->setTitre($data['titre']);
         $stage->setEntreprise($data['entreprise']);
         $stage->setDescription($data['description']);
-        $stage->setDateDebut(new \DateTime($data['dateDebut']));
-        $stage->setDateFin(new \DateTime($data['dateFin']));
+        $stage->setDateDebut(new DateTime($data['dateDebut']));
+        $stage->setDateFin(new DateTime($data['dateFin']));
         $stage->setMotsCles($data['motsCles'] ?? null);
     
-        $villeNom = trim($data['ville_nom'] ?? '');
+        // 🔎 Vérifie si la ville existe déjà
+        $villeNom = $data['ville_nom'] ?? null;
         $ville = $em->getRepository(Ville::class)->findOneBy(['nom' => $villeNom]);
+    
+        // ➕ Si la ville n'existe pas, on la crée
         if (!$ville) {
             $ville = new Ville();
             $ville->setNom($villeNom);
@@ -237,11 +243,18 @@ class HomeController
         }
     
         $stage->setVille($ville);
+
+
+        $stage->setCreatedAt(new DateTime('now', new \DateTimeZone('Europe/Paris')));    
+
         $em->persist($stage);
         $em->flush();
     
-        return $response->withHeader('Location', '/stages')->withStatus(302);
+        return $response
+            ->withHeader('Location', '/stages')
+            ->withStatus(302);
     }
+    
     
     
 
