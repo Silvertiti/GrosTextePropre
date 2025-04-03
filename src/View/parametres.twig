@@ -83,7 +83,10 @@
                     <td>{{ entreprise.getNumeroTelephone() }}</td>
                     <td>{{ entreprise.getSIRET() }}</td>
                     <td>{{ entreprise.getNoteEvaluation() }}</td>
-                    <td>{{ entreprise.getVues() }}</td>
+                    <td class="text-muted">
+                          {{ vuesParEntreprise[entreprise.getId()]|default(0) }}
+                    </td>
+
                     <td class="d-flex gap-2">
                       <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
                       <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
