@@ -296,7 +296,7 @@ class HomeController
         $em = $this->container->get(EntityManager::class);
         $user = $em->getRepository(User::class)->findOneBy(['email' => $email]);
 
-        if ($user) {
+        if ($user && password_verify($password, $user->getMotDePasse())) {
             $session = $this->container->get('session');
             $session->set('idUser', $user->getId());
             $session->set('role', $user->getRole());
