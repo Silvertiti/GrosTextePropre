@@ -23,8 +23,8 @@
     </div>
 
     <div class="mb-3">
-      <label for="description" class="form-label">description</label>
-      <input type="text" class="form-control" id="description" name="description" value="{{ entreprise.getDescription() }}" required>
+      <label for="description" class="form-label">Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3" required>{{ entreprise.getDescription() }}</textarea>
     </div>
 
     <div class="mb-3">
@@ -34,12 +34,12 @@
 
     <div class="mb-3">
       <label for="note" class="form-label">Note d'évaluation</label>
-      <input type="number" class="form-control" id="note" name="note" min="0" max="10" value="{{ entreprise.getNoteEvaluation() }}" required>
+      <input type="number" class="form-control" id="note" name="note" min="0" max="10" step="0.1" value="{{ entreprise.getNoteEvaluation() }}" required>
     </div>
 
     <div class="mb-4">
       <label for="site" class="form-label">Lien du site web</label>
-      <input type="text" class="form-control" id="site" name="site" value="{{ entreprise.getLienSiteWeb() }}">
+      <input type="url" class="form-control" id="site" name="site" value="{{ entreprise.getLienSiteWeb() }}">
     </div>
 
     <button type="submit" class="btn btn-warning w-100">Mettre à jour l'entreprise</button>

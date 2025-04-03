@@ -12,6 +12,7 @@ use App\Model\Stage;
 use App\Model\Ville;
 use App\Model\Entreprise;
 use DateTime;
+use App\Model\StageViews;
 
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
@@ -49,34 +50,57 @@ class HomeController
     {
         $em = $this->container->get(EntityManager::class);
         $stage = $em->getRepository(Stage::class)->find($args['id']);
-
+    
         if (!$stage) {
             $response->getBody()->write("Stage introuvable.");
             return $response->withStatus(404);
         }
-
+    
+        $entreprises = $em->getRepository(Entreprise::class)->findAll(); 
+    
         $view = Twig::fromRequest($request);
         return $view->render($response, 'edit_stage.twig', [
-            'stage' => $stage
+            'stage' => $stage,
+            'entreprises' => $entreprises
         ]);
     }
+    
 
     public function updateStage(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);
         $stage = $em->getRepository(Stage::class)->find($args['id']);
-
-        if ($stage) {
-            $data = $request->getParsedBody();
-            $stage->setTitre($data['titre']);
-            $stage->setEntreprise($data['entreprise']);
-            $stage->setDescription($data['description']);
-            $stage->setDisponible(isset($data['disponible']));
-            $em->flush();
+    
+        if (!$stage) {
+            $response->getBody()->write("Stage introuvable.");
+            return $response->withStatus(404);
         }
-
+    
+        $data = $request->getParsedBody();
+    
+        $villeNom = trim($data['ville_nom'] ?? '');
+        $ville = $em->getRepository(\App\Model\Ville::class)->findOneBy(['nom' => $villeNom]);
+    
+        if (!$ville) {
+            $ville = new \App\Model\Ville();
+            $ville->setNom($villeNom);
+            $em->persist($ville);
+        }
+    
+        $stage->setTitre($data['titre']);
+        $stage->setEntreprise($data['entreprise']);
+        $stage->setDescription($data['description']);
+        $stage->setDateDebut(new \DateTime($data['dateDebut']));
+        $stage->setDateFin(new \DateTime($data['dateFin']));
+        $stage->setVille($ville);
+        $stage->setMotsCles($data['motsCles'] ?? null);
+        $stage->setDisponible(isset($data['disponible']));
+    
+        $em->flush();
+    
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
+    
 
     public function deleteStage(Request $request, Response $response, array $args): Response
     {
@@ -143,11 +167,32 @@ class HomeController
         $view = Twig::fromRequest($request);
         $session = $this->container->get('session');
         $em = $this->container->get(EntityManager::class); 
+
     
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
         $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']); 
         $offres = $em->getRepository(Stage::class)->findAll();
-        $entreprises = $em->getRepository(Entreprise::class)->findAll();            
+        $entreprises = $em->getRepository(\App\Model\Entreprise::class)->findAll();
+        
+            $entreprisesParId = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId[$e->getId()] = $e->getNom();
+        }
+        
+        // Comptage des vues
+        $vuesParStage = [];
+        foreach ($offres as $offre) {
+            $count = $em->createQueryBuilder()
+                ->select('COUNT(v.id)')
+                ->from(StageViews::class, 'v')
+                ->where('v.stage = :stage')
+                ->setParameter('stage', $offre)
+                ->getQuery()
+                ->getSingleScalarResult();
+
+            $vuesParStage[$offre->getId()] = $count;
+        }
+
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
             'session' => [
@@ -157,9 +202,14 @@ class HomeController
             'students' => $students,
             'tuteurs' => $tuteurs, 
             'offres' => $offres,
-            'entreprises' => $entreprises        
+            'entreprises' => $entreprises,
+            'entreprisesParId' => $entreprisesParId,
+            'vuesParStage' => $vuesParStage
+
+            
         ]);
     }
+    
     
 
     public function loginPage(Request $request, Response $response): Response
@@ -210,7 +260,8 @@ class HomeController
         $view = Twig::fromRequest($request);
         return $view->render($response, 'create_job.twig', [
             'title' => 'Ajouter un stage',
-            'villes' => $villes
+            'villes' => $villes,
+            'entreprises' => $em->getRepository(Entreprise::class)->findAll(),
         ]);
     }
     
@@ -232,11 +283,9 @@ class HomeController
         $stage->setDateFin(new DateTime($data['dateFin']));
         $stage->setMotsCles($data['motsCles'] ?? null);
     
-        // 🔎 Vérifie si la ville existe déjà
         $villeNom = $data['ville_nom'] ?? null;
         $ville = $em->getRepository(Ville::class)->findOneBy(['nom' => $villeNom]);
     
-        // ➕ Si la ville n'existe pas, on la crée
         if (!$ville) {
             $ville = new Ville();
             $ville->setNom($villeNom);
@@ -255,8 +304,6 @@ class HomeController
             ->withHeader('Location', '/stages')
             ->withStatus(302);
     }
-    
-    
     
 
     public function adminStages(Request $request, Response $response): Response

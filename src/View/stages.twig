@@ -45,8 +45,11 @@
             <div class="d-flex justify-content-between">
               <div>
                 <h5>{{ offre.getTitre() }}</h5>
-                <h6 class="text-muted">{{ offre.getEntreprise() }}</h6>
-              </div>
+                    <h6 class="text-muted">
+                      {{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}
+                    </h6>
+          
+                  </div>
               <button type="button" class="btn p-0 border-0 bg-transparent toggle-fav" data-stage-id="{{ offre.getId() }}">
                 <i class="bi fs-5 {{ offre.getId() in favoris ? 'bi-heart-fill text-danger' : 'bi-heart text-danger' }}"></i>
               </button>

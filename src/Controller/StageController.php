@@ -12,6 +12,7 @@ use App\Model\User;
 use App\Model\Favori;
 use App\Model\Candidature;
 use App\Model\StageViews;
+use App\Model\Entreprise;
 
 class StageController
 {
@@ -114,7 +115,14 @@ class StageController
             }
         }
 
-        // 🔔 Message flash
+        // Entreprises associées (ID → nom)
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();
+        $entreprisesParId = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId[$e->getId()] = $e->getNom();
+        }
+
+        // Flash message
         $flashMessage = $session->get('flash_message');
         $session->delete('flash_message');
 
@@ -130,7 +138,8 @@ class StageController
             'favoris' => $favorisIds,
             'now' => new \DateTimeImmutable('now'),
             'flash_message' => $flashMessage,
-            'vuesParStage' => $vuesParStage
+            'vuesParStage' => $vuesParStage,
+            'entreprisesParId' => $entreprisesParId
         ]);
     }
 
@@ -170,23 +179,23 @@ class StageController
     {
         $em = $this->container->get(EntityManager::class);
         $stage = $em->getRepository(Stage::class)->find($args['id']);  
-        
+    
         if (!$stage) {
             $response->getBody()->write("Stage non trouvé.");
             return $response->withStatus(404);
         }
-
+    
         $ville = $stage->getVille();  
         $villeNom = ($ville === null || $ville->getId() == 0) ? "Ville non précisée" : $ville->getNom();  
-
+    
         $session = $this->container->get('session');
         $userId = $session->get('idUser');
         $user = $em->getRepository(User::class)->find($userId);
-
+    
         if ($user) {
             $viewRepo = $em->getRepository(StageViews::class);
             $existingView = $viewRepo->findOneBy(['stage' => $stage, 'user' => $user]);
-
+    
             if (!$existingView) {
                 $vue = new StageViews($stage, $user);
                 $vue->setViewedAt(new \DateTime());
@@ -194,14 +203,29 @@ class StageController
                 $em->flush();
             }
         }
-
+    
+        $entreprise = $em->getRepository(Entreprise::class)->findOneBy([
+            'nom' => $stage->getEntreprise()
+        ]);
+    
+        $entrepriseId = $entreprise ? $entreprise->getId() : null;
+    
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();
+        $entreprisesParId = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId[$e->getId()] = $e->getNom();
+        }
+    
         $view = Twig::fromRequest($request);
         return $view->render($response, 'postuler_stage.twig', [
             'stage' => $stage,
-            'villeNom' => $villeNom  
+            'villeNom' => $villeNom,
+            'entreprisesParId' => $entreprisesParId,
+            'entrepriseId' => $entrepriseId
         ]);
     }
-
+    
+    
     public function postulerStage(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);

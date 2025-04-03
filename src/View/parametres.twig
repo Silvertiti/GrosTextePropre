@@ -123,8 +123,8 @@
                 {% for offre in offres %}
                   <tr>
                     <td>{{ offre.getTitre() }}</td>
-                    <td>{{ offre.getEntreprise() }}</td>
-                    <td>{{ offre.getVues() }}</td>
+                    <td>{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
+                    <td>{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
 
                     <td>
                       {% if offre.isDisponible() %}
