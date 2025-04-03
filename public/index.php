@@ -15,6 +15,7 @@ use DI\Container;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Psr7\Factory\ResponseFactory;
 use App\Middlewares\UserMiddleware;
+
 date_default_timezone_set('Europe/Paris');
 
 $container = require __DIR__ . '/../bootstrap.php';
@@ -40,8 +41,8 @@ $container->set(StageController::class, function () use ($container) {
     return new StageController($container);
 });
 
-$userController = new \App\Controller\UserController($container);
-$userController->registerRoutes($app);
+$parametreController = new \App\Controller\ParametreController($container);
+$parametreController->registerRoutes($app);
 
 $container->set(AdminMiddleware::class, function () use ($container) {
     return new AdminMiddleware($container);

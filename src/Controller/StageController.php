@@ -15,6 +15,8 @@ use App\Model\StageViews;
 use App\Model\Entreprise;
 use App\Model\EntrepriseNote;
 use App\Middlewares\AdminMiddleware;
+use App\Middlewares\UserMiddleware;
+use App\Middlewares\TuteurMiddleware;
 
 class StageController
 {
@@ -32,9 +34,9 @@ class StageController
         $app->post('/stages/{id}/postuler', [self::class, 'postulerStage']);
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
         $app->post('/entreprise/{id}/noter', [self::class, 'noterEntreprise']);
-        $app->get('/stages/{id}/edit', [StageController::class, 'editStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/edit', [StageController::class, 'updateStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/delete', [StageController::class, 'deleteStage'])->add(AdminMiddleware::class);
+        $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
     }
 
     public function editStage(Request $request, Response $response, array $args): Response
@@ -105,6 +107,7 @@ class StageController
 
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
+
 
     public function stages(Request $request, Response $response): Response
     {
