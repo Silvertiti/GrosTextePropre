@@ -39,9 +39,13 @@
         <a href="#entreprise" class="nav-link">Gestion entreprises</a>
         <a href="#stage" class="nav-link">Gestion Offres de stage</a>
         <a href="#promotion" class="nav-link">Gestion Pilotes de promotion</a>
-        <a href="#étudiants" class="nav-link">Gestion étudiants</a>
-        <a href="#candidature" class="nav-link">Gestion Candidature</a>
         {% endif %}
+              {% if session.role == 'admin' or session.role == 'tuteur' %}
+        <a href="#étudiants" class="nav-link">Gestion étudiants</a>
+        {% endif %}
+              {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
+        <a href="#candidature" class="nav-link">Gestion Candidature</a>
+      {% endif %}
 
     </nav>
 
@@ -75,7 +79,7 @@
             </form>
         </div>
 
-        {% if session.role == 'admin' %}
+        {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
         <div id="entreprise" style="display:none">
           <div class="section-title">Gestion Entreprises</div>
 
