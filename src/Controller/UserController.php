@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Model\Entreprise;
 use App\Model\Stage;
-use
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
