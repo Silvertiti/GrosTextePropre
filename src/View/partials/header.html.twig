@@ -11,11 +11,7 @@
         <li class="nav-item"><a class="nav-link" href="/parametres">Parametres</a></li>
       </ul>
         <ul class="navbar-nav">
-        {% if user.prenom %}
-          <li class="nav-item"><a class="nav-link" href="/parametres">{{ user.prenom }}</a></li>
-        {% else %}
           <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
-        {% endif %}
       </ul>
     </div>
   </div>
