@@ -6,11 +6,13 @@
     color: #fff;
     min-height: 100vh;
     padding-top: 2rem;
+    transition: all 0.3s;
   }
   .sidebar .nav-link {
     color: #ccc;
     padding: 1rem;
     font-size: 1rem;
+    white-space: nowrap;
   }
   .sidebar .nav-link.active,
   .sidebar .nav-link:hover {
@@ -26,225 +28,504 @@
     margin-bottom: 1rem;
     color: #333;
   }
+  .sidebar-toggle {
+    display: none;
+    position: fixed;
+    top: 15px;
+    left: 220px;
+    z-index: 1050;
+    background: #1e1e1e;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 5px 10px;
+  }
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin-bottom: 1rem;
+  }
+  .search-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 1rem;
+  }
+  .search-container .form-control {
+    flex: 1;
+    min-width: 200px;
+  }
+  .btn-action-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  
+  /* Styles spécifiques pour les tableaux responsives */
+  .responsive-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .responsive-table th,
+  .responsive-table td {
+    padding: 0.75rem;
+    vertical-align: top;
+    border-top: 1px solid #dee2e6;
+  }
+  .responsive-table thead th {
+    vertical-align: bottom;
+    border-bottom: 2px solid #dee2e6;
+    background-color: #f8f9fa;
+  }
+  .responsive-table tbody tr:nth-of-type(odd) {
+    background-color: rgba(0,0,0,.02);
+  }
+  .responsive-table tbody tr:hover {
+    background-color: rgba(0,0,0,.075);
+  }
+  
+  /* Styles pour les cartes en mode mobile */
+  .table-card {
+    display: none;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+    padding: 10px;
+    background: #fff;
+  }
+  .table-card .card-row {
+    display: flex;
+    margin-bottom: 5px;
+  }
+  .table-card .card-label {
+    font-weight: bold;
+    min-width: 120px;
+    color: #555;
+  }
+  .table-card .card-value {
+    flex: 1;
+  }
+  .table-card .card-actions {
+    display: flex;
+    gap: 5px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+  
+  @media (max-width: 991.98px) {
+    .sidebar {
+      position: fixed;
+      z-index: 1000;
+      left: -250px;
+      width: 250px;
+      height: 100vh;
+      overflow-y: auto;
+    }
+    .sidebar.active {
+      left: 0;
+    }
+    .main-content {
+      margin-left: 0;
+      width: 100%;
+    }
+    .sidebar-toggle {
+      display: block;
+    }
+    .col-md-10 {
+      margin-left: 0;
+    }
+  }
+  
+  @media (max-width: 767.98px) {
+    .main-content {
+      padding: 1rem;
+      margin-top: 50px;
+    }
+    .section-title {
+      font-size: 1.25rem;
+    }
+    
+    /* Basculer vers les cartes en mode mobile */
+    .responsive-table thead {
+      display: none;
+    }
+    .responsive-table tr {
+      display: block;
+      margin-bottom: 1rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .responsive-table td {
+      display: block;
+      text-align: right;
+      padding: 0.5rem;
+      border: none;
+      border-bottom: 1px solid #eee;
+    }
+    .responsive-table td:before {
+      content: attr(data-label);
+      float: left;
+      font-weight: bold;
+      text-transform: uppercase;
+      font-size: 0.8em;
+      color: #666;
+    }
+    .responsive-table td:last-child {
+      border-bottom: 0;
+    }
+    
+    /* Ajustements pour les groupes de boutons */
+    .btn-action-group {
+      justify-content: flex-end;
+    }
+    .btn {
+      padding: 0.25rem 0.5rem;
+      font-size: 0.875rem;
+    }
+    
+    /* Masquer les tableaux et afficher les cartes en mobile */
+    .table-responsive {
+      display: none;
+    }
+    .table-card {
+      display: block;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .table-card {
+      display: none;
+    }
+    .table-responsive {
+      display: block;
+    }
+  }
 {% endblock %}
 
 {% block content %}
+<button class="sidebar-toggle" id="sidebarToggle">☰ Menu</button>
+
 <div class="container-fluid">
   <div class="row">
-    <!-- Sidebar -->
-    <nav class="col-md-2 sidebar d-flex flex-column">
+    <nav class="col-md-2 sidebar d-flex flex-column" id="sidebar">
       <a href="#profile" class="nav-link active">Gestion du Compte</a>
 
       {% if session.role == 'admin' %}
         <a href="#entreprise" class="nav-link">Gestion entreprises</a>
         <a href="#stage" class="nav-link">Gestion Offres de stage</a>
         <a href="#promotion" class="nav-link">Gestion Pilotes de promotion</a>
-        {% endif %}
-              {% if session.role == 'admin' or session.role == 'tuteur' %}
+      {% endif %}
+      
+      {% if session.role == 'admin' or session.role == 'tuteur' %}
         <a href="#étudiants" class="nav-link">Gestion étudiants</a>
-        {% endif %}
-              {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
+      {% endif %}
+      
+      {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
         <a href="#candidature" class="nav-link">Gestion Candidature</a>
       {% endif %}
-
     </nav>
 
-    <!-- Content -->
     <div class="col-md-10 p-0">
       <div class="main-content">
         <div id="profile">
           <div class="section-title">Profil</div>
           <form method="POST" action="/parametres">
-                <div class="mb-3">
-                    <label for="prenom" class="form-label">Prénom</label>
-                    <input type="text" class="form-control" name="prenom" id="prenom" value="{{ user.prenom }}" required />
-                </div>
+            <div class="mb-3">
+              <label for="prenom" class="form-label">Prénom</label>
+              <input type="text" class="form-control" name="prenom" id="prenom" value="{{ user.prenom }}" required />
+            </div>
 
-                <div class="mb-3">
-                    <label for="nom" class="form-label">Nom</label>
-                    <input type="text" class="form-control" name="nom" id="nom" value="{{ user.nom }}" required />
-                </div>
+            <div class="mb-3">
+              <label for="nom" class="form-label">Nom</label>
+              <input type="text" class="form-control" name="nom" id="nom" value="{{ user.nom }}" required />
+            </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Adresse email</label>
-                    <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}" required />
-                </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Adresse email</label>
+              <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}" required />
+            </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Nouveau mot de passe</label>
-                    <input type="password" class="form-control" name="password" id="password" />
-                </div>
+            <div class="mb-3">
+              <label for="password" class="form-label">Nouveau mot de passe</label>
+              <input type="password" class="form-control" name="password" id="password" />
+            </div>
 
-                <button type="submit" class="btn btn-primary">Mettre à jour</button>
-            </form>
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+          </form>
         </div>
 
         {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
         <div id="entreprise" style="display:none">
           <div class="section-title">Gestion Entreprises</div>
 
-          <div class="mb-3 d-flex justify-content-between align-items-center">
-            <input type="text" id="searchEntrepriseInput" class="form-control me-3" placeholder="Rechercher une entreprise...">
+          <div class="search-container">
+            <input type="text" id="searchEntrepriseInput" class="form-control" placeholder="Rechercher une entreprise...">
             <a href="/entreprises/create" class="btn btn-warning">Ajouter</a>
           </div>
 
           {% if entreprises is not empty %}
-            <table class="table table-bordered" id="entreprisesTable">
-              <thead>
-                <tr>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Téléphone</th>
-                  <th>SIRET</th>
-                  <th>Note</th>
-                  <th>Vues</th>
-                  <th>Candidatures</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for entreprise in entreprises %}
+            <div class="table-responsive">
+              <table class="responsive-table" id="entreprisesTable">
+                <thead>
                   <tr>
-                    <td>{{ entreprise.getNom() }}</td>
-                    <td>{{ entreprise.getEmail() }}</td>
-                    <td>{{ entreprise.getNumeroTelephone() }}</td>
-                    <td>{{ entreprise.getSIRET() }}</td>
-                    <td>{{ entreprise.getNoteEvaluation() }}</td>
-                    <td class="text-muted">
-                          {{ vuesParEntreprise[entreprise.getId()]|default(0) }}
-                    </td>
-                    <td>{{ candidaturesParEntreprise[entreprise.getId()]|default(0) }}</td>
-
-                    <td class="d-flex gap-2">
-                      <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
-                      <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
-                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                      </form>
-                    </td>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Téléphone</th>
+                    <th>SIRET</th>
+                    <th>Note</th>
+                    <th>Vues</th>
+                    <th>Candidatures</th>
+                    <th>Actions</th>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {% for entreprise in entreprises %}
+                    <tr>
+                      <td data-label="Nom">{{ entreprise.getNom() }}</td>
+                      <td data-label="Email">{{ entreprise.getEmail() }}</td>
+                      <td data-label="Téléphone">{{ entreprise.getNumeroTelephone() }}</td>
+                      <td data-label="SIRET">{{ entreprise.getSIRET() }}</td>
+                      <td data-label="Note">{{ entreprise.getNoteEvaluation() }}</td>
+                      <td data-label="Vues" class="text-muted">
+                        {{ vuesParEntreprise[entreprise.getId()]|default(0) }}
+                      </td>
+                      <td data-label="Candidatures">{{ candidaturesParEntreprise[entreprise.getId()]|default(0) }}</td>
+                      <td data-label="Actions">
+                        <div class="btn-action-group">
+                          <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                          <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="table-card-container" id="entreprisesCards">
+              {% for entreprise in entreprises %}
+                <div class="table-card">
+                  <div class="card-row">
+                    <span class="card-label">Nom:</span>
+                    <span class="card-value">{{ entreprise.getNom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Email:</span>
+                    <span class="card-value">{{ entreprise.getEmail() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Téléphone:</span>
+                    <span class="card-value">{{ entreprise.getNumeroTelephone() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">SIRET:</span>
+                    <span class="card-value">{{ entreprise.getSIRET() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Note:</span>
+                    <span class="card-value">{{ entreprise.getNoteEvaluation() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Vues:</span>
+                    <span class="card-value">{{ vuesParEntreprise[entreprise.getId()]|default(0) }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Candidatures:</span>
+                    <span class="card-value">{{ candidaturesParEntreprise[entreprise.getId()]|default(0) }}</span>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                    <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
+                      <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           {% else %}
             <div class="alert alert-info">Aucune entreprise trouvée.</div>
           {% endif %}
         </div>
 
+        <div id="stage" style="display: none">
+          <div class="section-title">Gestion Offres de stage</div>
 
-      <div id="stage" style="display: none">
-        <div class="section-title">Gestion Offres de stage</div>
-
-        <div class="mb-3 d-flex justify-content-between align-items-center">
-          <input type="text" id="searchInput" class="form-control me-3" placeholder="Rechercher un stage par titre ou entreprise...">
-          <a href="/addjob" class="btn btn-warning">Ajouter</a>
-        </div>
+          <div class="search-container">
+            <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un stage par titre ou entreprise...">
+            <a href="/addjob" class="btn btn-warning">Ajouter</a>
+          </div>
 
           {% if offres is not empty %}
-            <table class="table table-bordered" id="stagesTable">
-              <thead>
-                <tr>
-                  <th>Titre</th>
-                  <th>Entreprise</th>
-                  <th>Vues</th>
-                  <th>Candidatures</th>
-                  <th>Disponibilité</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for offre in offres %}
+            <div class="table-responsive">
+              <table class="responsive-table" id="stagesTable">
+                <thead>
                   <tr>
-                    <td>{{ offre.getTitre() }}</td>
-                    <td>{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
-                    <td>{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
-                    <td>{{ candidaturesParStage[offre.getId()]|default(0) }}</td>
-
-                    <td>
+                    <th>Titre</th>
+                    <th>Entreprise</th>
+                    <th>Vues</th>
+                    <th>Candidatures</th>
+                    <th>Disponibilité</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for offre in offres %}
+                    <tr>
+                      <td data-label="Titre">{{ offre.getTitre() }}</td>
+                      <td data-label="Entreprise">{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
+                      <td data-label="Vues">{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
+                      <td data-label="Candidatures">{{ candidaturesParStage[offre.getId()]|default(0) }}</td>
+                      <td data-label="Disponibilité">
+                        {% if offre.isDisponible() %}
+                          <span class="badge bg-success">Disponible</span>
+                        {% else %}
+                          <span class="badge bg-secondary">Indisponible</span>
+                        {% endif %}
+                      </td>
+                      <td data-label="Actions">
+                        <div class="btn-action-group">
+                          <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                          <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="table-card-container" id="stagesCards">
+              {% for offre in offres %}
+                <div class="table-card">
+                  <div class="card-row">
+                    <span class="card-label">Titre:</span>
+                    <span class="card-value">{{ offre.getTitre() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Entreprise:</span>
+                    <span class="card-value">{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Vues:</span>
+                    <span class="card-value">{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Candidatures:</span>
+                    <span class="card-value">{{ candidaturesParStage[offre.getId()]|default(0) }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Disponibilité:</span>
+                    <span class="card-value">
                       {% if offre.isDisponible() %}
                         <span class="badge bg-success">Disponible</span>
                       {% else %}
                         <span class="badge bg-secondary">Indisponible</span>
                       {% endif %}
-                    </td>
-                    <td class="d-flex gap-2">
-                      <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">
-                        Modifier
-                      </a>
-
-                      <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
-                        <button type="submit" class="btn btn-sm btn-danger">
-                          Supprimer
-                        </button>
-                        
-                      </form>
-                    </td>
-                  </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                    </span>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                    <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
+                      <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           {% else %}
             <div class="alert alert-info">Aucune offre disponible.</div>
           {% endif %}
         </div>
 
+        <div id="promotion" style="display:none">
+          <div class="section-title">Gestion Pilotes de promotion</div>
 
-
-
-      <div id="promotion" style="display:none">
-        <div class="section-title">Gestion Pilotes de promotion</div>
-
-        <div class="mb-3 d-flex justify-content-between align-items-center">
-          <input type="text" id="searchTuteurInput" class="form-control me-3" placeholder="Rechercher un pilote par nom ou email...">
-          <a href="/register" class="btn btn-warning">Ajouter</a>
-        </div>
+          <div class="search-container">
+            <input type="text" id="searchTuteurInput" class="form-control" placeholder="Rechercher un pilote par nom ou email...">
+            <a href="/register" class="btn btn-warning">Ajouter</a>
+          </div>
 
           {% if tuteurs is not empty %}
-            <table class="table table-bordered" id="tuteursTable">
-              <thead>
-                <tr>
-                  <th>Prénom</th>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Candidatures</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for tuteur in tuteurs %}
+            <div class="table-responsive">
+              <table class="responsive-table" id="tuteursTable">
+                <thead>
                   <tr>
-                    <td>{{ tuteur.getPrenom() }} </td>
-                    <td>{{ tuteur.getNom() }}</td>
-                    <td>{{ tuteur.getEmail() }}</td>
-                    <td>{{ candidaturesParEtudiant[student.getId()]|default(0) }}</td>
-                    <td class="d-flex gap-2">
-                        <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">
-                          Modifier
-                        </a>
-                      <form method="POST" action="/users/{{ tuteur.getId() }}/delete" onsubmit="return confirm('Supprimer ce tuteur ?');">
-                        <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                      </form>
-                    </td>
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Candidatures</th>
+                    <th>Action</th>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {% for tuteur in tuteurs %}
+                    <tr>
+                      <td data-label="Prénom">{{ tuteur.getPrenom() }}</td>
+                      <td data-label="Nom">{{ tuteur.getNom() }}</td>
+                      <td data-label="Email">{{ tuteur.getEmail() }}</td>
+                      <td data-label="Candidatures">{{ candidaturesParEtudiant[student.getId()]|default(0) }}</td>
+                      <td data-label="Actions">
+                        <div class="btn-action-group">
+                          <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                          <form method="POST" action="/users/{{ tuteur.getId() }}/delete" onsubmit="return confirm('Supprimer ce tuteur ?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                          </form>
+                        </div>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="table-card-container" id="tuteursCards">
+              {% for tuteur in tuteurs %}
+                <div class="table-card">
+                  <div class="card-row">
+                    <span class="card-label">Prénom:</span>
+                    <span class="card-value">{{ tuteur.getPrenom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Nom:</span>
+                    <span class="card-value">{{ tuteur.getNom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Email:</span>
+                    <span class="card-value">{{ tuteur.getEmail() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Candidatures:</span>
+                    <span class="card-value">{{ candidaturesParEtudiant[student.getId()]|default(0) }}</span>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                    <form method="POST" action="/users/{{ tuteur.getId() }}/delete" onsubmit="return confirm('Supprimer ce tuteur ?');">
+                      <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           {% else %}
             <div class="alert alert-info">Aucun tuteur trouvé.</div>
           {% endif %}
         </div>
 
-
         <div id="étudiants" style="display:none">
           <div class="section-title">Gestion étudiants</div>
 
-          <div class="mb-3 d-flex justify-content-between align-items-center">
-            <input type="text" id="searchStudentInput" class="form-control me-3" placeholder="Rechercher un étudiant par nom ou email...">
+          <div class="search-container">
+            <input type="text" id="searchStudentInput" class="form-control" placeholder="Rechercher un étudiant par nom ou email...">
             <a href="/register" class="btn btn-warning">Ajouter</a>
           </div>
 
-
-            {% if students is not empty %}
-              <table class="table table-bordered" id="studentsTable">
+          {% if students is not empty %}
+            <div class="table-responsive">
+              <table class="responsive-table" id="studentsTable">
                 <thead>
                   <tr>
                     <th>Prénom</th>
@@ -256,69 +537,116 @@
                 <tbody>
                   {% for student in students %}
                     <tr>
-                      <td>{{ student.getPrenom() }}</td> 
-                      <td>{{ student.getNom() }}</td>
-                      <td>{{ student.getEmail() }}</td>
-                      <td class="d-flex gap-2">
-                        <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">
-                          Modifier
-                        </a>
-                        <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                          <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                        </form>
+                      <td data-label="Prénom">{{ student.getPrenom() }}</td>
+                      <td data-label="Nom">{{ student.getNom() }}</td>
+                      <td data-label="Email">{{ student.getEmail() }}</td>
+                      <td data-label="Actions">
+                        <div class="btn-action-group">
+                          <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                          <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                          </form>
+                        </div>
                       </td>
                     </tr>
                   {% endfor %}
                 </tbody>
               </table>
-            {% else %}
-              <div class="alert alert-info">Aucun étudiant trouvé.</div>
-            {% endif %}
+            </div>
+            
+            <div class="table-card-container" id="studentsCards">
+              {% for student in students %}
+                <div class="table-card">
+                  <div class="card-row">
+                    <span class="card-label">Prénom:</span>
+                    <span class="card-value">{{ student.getPrenom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Nom:</span>
+                    <span class="card-value">{{ student.getNom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Email:</span>
+                    <span class="card-value">{{ student.getEmail() }}</span>
+                  </div>
+                  <div class="card-actions">
+                    <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                    <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                      <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                    </form>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <div class="alert alert-info">Aucun étudiant trouvé.</div>
+          {% endif %}
         </div>
-
-
-
-
 
         <div id="candidature" style="display:none">
           <div class="section-title">Gestion Candidature</div>
 
-          <div class="mb-3 d-flex justify-content-between align-items-center">
-            <input type="text" id="searchCandidatureInput" class="form-control me-3" placeholder="Rechercher une candidature par prénom, nom, email, stage ou entreprise...">
+          <div class="search-container">
+            <input type="text" id="searchCandidatureInput" class="form-control" placeholder="Rechercher une candidature...">
           </div>
 
           {% if candidatures is not empty %}
-            <table class="table table-bordered" id="candidaturesTable">
-              <thead>
-                <tr>
-                  <th>Prénom</th>
-                  <th>Nom</th>
-                  <th>Email</th>
-                  <th>Stage</th>
-                  <th>Entreprise</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for candidature in candidatures %}
+            <div class="table-responsive">
+              <table class="responsive-table" id="candidaturesTable">
+                <thead>
                   <tr>
-                    <td>{{ candidature.getUser().getPrenom() }}</td>
-                    <td>{{ candidature.getUser().getNom() }}</td>
-                    <td>{{ candidature.getUser().getEmail() }}</td>
-                    <td>{{ candidature.getStage().getTitre() }}</td>
-                    <td>{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
-
+                    <th>Prénom</th>
+                    <th>Nom</th>
+                    <th>Email</th>
+                    <th>Stage</th>
+                    <th>Entreprise</th>
                   </tr>
-                {% endfor %}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {% for candidature in candidatures %}
+                    <tr>
+                      <td data-label="Prénom">{{ candidature.getUser().getPrenom() }}</td>
+                      <td data-label="Nom">{{ candidature.getUser().getNom() }}</td>
+                      <td data-label="Email">{{ candidature.getUser().getEmail() }}</td>
+                      <td data-label="Stage">{{ candidature.getStage().getTitre() }}</td>
+                      <td data-label="Entreprise">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+            
+            <div class="table-card-container" id="candidaturesCards">
+              {% for candidature in candidatures %}
+                <div class="table-card">
+                  <div class="card-row">
+                    <span class="card-label">Prénom:</span>
+                    <span class="card-value">{{ candidature.getUser().getPrenom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Nom:</span>
+                    <span class="card-value">{{ candidature.getUser().getNom() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Email:</span>
+                    <span class="card-value">{{ candidature.getUser().getEmail() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Stage:</span>
+                    <span class="card-value">{{ candidature.getStage().getTitre() }}</span>
+                  </div>
+                  <div class="card-row">
+                    <span class="card-label">Entreprise:</span>
+                    <span class="card-value">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</span>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
           {% else %}
             <div class="alert alert-info">Aucune candidature enregistrée.</div>
           {% endif %}
         </div>
-          
-          {% endif %} 
-
-
+        {% endif %}
       </div>
     </div>
   </div>
@@ -326,6 +654,15 @@
 
 <script>
   document.addEventListener("DOMContentLoaded", function () {
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    
+    if (sidebarToggle && sidebar) {
+      sidebarToggle.addEventListener('click', function() {
+        sidebar.classList.toggle('active');
+      });
+    }
+
     const links = document.querySelectorAll('.sidebar .nav-link');
     const sections = document.querySelectorAll('.main-content > div');
 
@@ -338,93 +675,68 @@
         sections.forEach(sec => sec.style.display = 'none');
         const target = document.querySelector(link.getAttribute('href'));
         if (target) target.style.display = 'block';
+        
+        if (window.innerWidth < 992) {
+          sidebar.classList.remove('active');
+        }
       });
     });
 
-    const searchInput = document.getElementById('searchInput');
-    const rows = document.querySelectorAll('#stagesTable tbody tr');
-
-    if (searchInput) {
-      searchInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
-        rows.forEach(row => {
-          const titre = row.cells[0].textContent.toLowerCase();
-          const entreprise = row.cells[1].textContent.toLowerCase();
-          row.style.display = (titre.includes(value) || entreprise.includes(value)) ? '' : 'none';
-        });
-      });
-    }
-
-    const studentSearchInput = document.getElementById('searchStudentInput');
-    const studentRows = document.querySelectorAll('#studentsTable tbody tr');
-
-    if (studentSearchInput) {
-      studentSearchInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
-        studentRows.forEach(row => {
-          const nom = row.cells[1].textContent.toLowerCase();
-          const email = row.cells[2].textContent.toLowerCase();
-          row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
-        });
-      });
-    }
-    const searchTuteurInput = document.getElementById('searchTuteurInput');
-    const tuteurRows = document.querySelectorAll('#tuteursTable tbody tr');
-
-    if (searchTuteurInput) {
-      searchTuteurInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
-        tuteurRows.forEach(row => {
-          const nom = row.cells[1].textContent.toLowerCase();
-          const email = row.cells[2].textContent.toLowerCase();
-          row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
-        });
-      });
-    }
-    const searchCandidatureInput = document.getElementById('searchCandidatureInput');
-    const candidatureRows = document.querySelectorAll('#candidaturesTable tbody tr');
-
-    if (searchCandidatureInput) {
-      searchCandidatureInput.addEventListener('keyup', function () {
-        const value = this.value.toLowerCase();
-        candidatureRows.forEach(row => {
-          const prenom = row.cells[0].textContent.toLowerCase();
-          const nom = row.cells[1].textContent.toLowerCase();
-          const email = row.cells[2].textContent.toLowerCase();
-          const stage = row.cells[3].textContent.toLowerCase();
-          const entreprise = row.cells[4].textContent.toLowerCase();
-
-          const match =
-            prenom.includes(value) ||
-            nom.includes(value) ||
-            email.includes(value) ||
-            stage.includes(value) ||
-            entreprise.includes(value);
-
-          row.style.display = match ? '' : 'none';
-        });
-      });
-    }
-
-      document.addEventListener("DOMContentLoaded", function () {
-      const input = document.getElementById('searchEntrepriseInput');
-      const rows = document.querySelectorAll('#entreprisesTable tbody tr');
+    function setupSearch(inputId, tableId, searchColumns) {
+      const input = document.getElementById(inputId);
+      const rows = document.querySelectorAll(`#${tableId} tbody tr`);
 
       if (input) {
-        input.addEventListener('keyup', function () {
+        input.addEventListener('keyup', function() {
           const value = this.value.toLowerCase();
           rows.forEach(row => {
-            const nom = row.cells[0].textContent.toLowerCase();
-            const email = row.cells[1].textContent.toLowerCase();
-            row.style.display = (nom.includes(value) || email.includes(value)) ? '' : 'none';
+            let match = false;
+            searchColumns.forEach(colIndex => {
+              if (row.cells[colIndex] && row.cells[colIndex].textContent.toLowerCase().includes(value)) {
+                match = true;
+              }
+            });
+            row.style.display = match ? '' : 'none';
           });
         });
       }
-    });
+    }
+    
+    function setupCardSearch(inputId, cardContainerId, searchFields) {
+      const input = document.getElementById(inputId);
+      const cards = document.querySelectorAll(`#${cardContainerId} .table-card`);
+
+      if (input) {
+        input.addEventListener('keyup', function() {
+          const value = this.value.toLowerCase();
+          cards.forEach(card => {
+            let match = false;
+            searchFields.forEach(field => {
+              const element = card.querySelector(`.card-row .card-${field}`);
+              if (element && element.textContent.toLowerCase().includes(value)) {
+                match = true;
+              }
+            });
+            card.style.display = match ? 'block' : 'none';
+          });
+        });
+      }
+    }
+
+    setupSearch('searchInput', 'stagesTable', [0, 1]);
+    setupCardSearch('searchInput', 'stagesCards', ['value']);
+    
+    setupSearch('searchStudentInput', 'studentsTable', [1, 2]);
+    setupCardSearch('searchStudentInput', 'studentsCards', ['value']);
+    
+    setupSearch('searchTuteurInput', 'tuteursTable', [1, 2]);
+    setupCardSearch('searchTuteurInput', 'tuteursCards', ['value']);
+    
+    setupSearch('searchCandidatureInput', 'candidaturesTable', [0, 1, 2, 3, 4]);
+    setupCardSearch('searchCandidatureInput', 'candidaturesCards', ['value']);
+    
+    setupSearch('searchEntrepriseInput', 'entreprisesTable', [0, 1]);
+    setupCardSearch('searchEntrepriseInput', 'entreprisesCards', ['value']);
   });
-  
-
 </script>
-
-
 {% endblock %}
