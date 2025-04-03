@@ -35,16 +35,23 @@ class Candidature
         $this->stage = $stage;
         $this->user = $user;
         $this->motivation = $motivation;
+        $this->createdAt = new \DateTime(); 
     }
 
     public function getId(): int { return $this->id; }
+
     public function getStage(): Stage { return $this->stage; }
+    public function setStage(Stage $stage): void { $this->stage = $stage; }
+
     public function getUser(): User { return $this->user; }
+    public function setUser(User $user): void { $this->user = $user; }
+
     public function getMotivation(): string { return $this->motivation; }
+    public function setMotivation(string $motivation): void { $this->motivation = $motivation; }
 
     public function getCreatedAt(): \DateTime { return $this->createdAt; }
     public function setCreatedAt(\DateTime $createdAt): void { $this->createdAt = $createdAt; }
 
     public function getCvPath(): ?string { return $this->cvPath; }
-    public function setCvPath(string $cvPath): void { $this->cvPath = $cvPath; }
+    public function setCvPath(?string $cvPath): void { $this->cvPath = $cvPath; }
 }

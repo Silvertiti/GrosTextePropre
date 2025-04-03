@@ -72,6 +72,7 @@
                   <th>SIRET</th>
                   <th>Note</th>
                   <th>Vues</th>
+                  <th>Candidatures</th>
                   <th>Actions</th>
                 </tr>
               </thead>
@@ -86,6 +87,7 @@
                     <td class="text-muted">
                           {{ vuesParEntreprise[entreprise.getId()]|default(0) }}
                     </td>
+                    <td>{{ candidaturesParEntreprise[entreprise.getId()]|default(0) }}</td>
 
                     <td class="d-flex gap-2">
                       <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
@@ -118,6 +120,7 @@
                   <th>Titre</th>
                   <th>Entreprise</th>
                   <th>Vues</th>
+                  <th>Candidatures</th>
                   <th>Disponibilité</th>
                   <th>Action</th>
                 </tr>
@@ -128,6 +131,7 @@
                     <td>{{ offre.getTitre() }}</td>
                     <td>{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
                     <td>{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
+                    <td>{{ candidaturesParStage[offre.getId()]|default(0) }}</td>
 
                     <td>
                       {% if offre.isDisponible() %}
@@ -175,6 +179,7 @@
                   <th>Prénom</th>
                   <th>Nom</th>
                   <th>Email</th>
+                  <th>Candidatures</th>
                   <th>Action</th>
                 </tr>
               </thead>
@@ -184,6 +189,7 @@
                     <td>{{ tuteur.getPrenom() }} </td>
                     <td>{{ tuteur.getNom() }}</td>
                     <td>{{ tuteur.getEmail() }}</td>
+                    <td>{{ candidaturesParEtudiant[student.getId()]|default(0) }}</td>
                     <td class="d-flex gap-2">
                         <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">
                           Modifier
