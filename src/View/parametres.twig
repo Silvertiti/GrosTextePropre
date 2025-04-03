@@ -251,11 +251,47 @@
         </div>
 
 
+
+
+
         <div id="candidature" style="display:none">
           <div class="section-title">Gestion Candidature</div>
-          <p>Activer l'authentification à deux facteurs et voir l'activité de connexion.</p>
+
+          <div class="mb-3 d-flex justify-content-between align-items-center">
+            <input type="text" id="searchCandidatureInput" class="form-control me-3" placeholder="Rechercher une candidature par prénom, nom, email, stage ou entreprise...">
+          </div>
+
+          {% if candidatures is not empty %}
+            <table class="table table-bordered" id="candidaturesTable">
+              <thead>
+                <tr>
+                  <th>Prénom</th>
+                  <th>Nom</th>
+                  <th>Email</th>
+                  <th>Stage</th>
+                  <th>Entreprise</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for candidature in candidatures %}
+                  <tr>
+                    <td>{{ candidature.getUser().getPrenom() }}</td>
+                    <td>{{ candidature.getUser().getNom() }}</td>
+                    <td>{{ candidature.getUser().getEmail() }}</td>
+                    <td>{{ candidature.getStage().getTitre() }}</td>
+                    <td>{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
+
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          {% else %}
+            <div class="alert alert-info">Aucune candidature enregistrée.</div>
+          {% endif %}
         </div>
-        {% endif %}
+          
+          {% endif %} 
+
 
       </div>
     </div>
@@ -319,6 +355,31 @@
         });
       });
     }
+    const searchCandidatureInput = document.getElementById('searchCandidatureInput');
+    const candidatureRows = document.querySelectorAll('#candidaturesTable tbody tr');
+
+    if (searchCandidatureInput) {
+      searchCandidatureInput.addEventListener('keyup', function () {
+        const value = this.value.toLowerCase();
+        candidatureRows.forEach(row => {
+          const prenom = row.cells[0].textContent.toLowerCase();
+          const nom = row.cells[1].textContent.toLowerCase();
+          const email = row.cells[2].textContent.toLowerCase();
+          const stage = row.cells[3].textContent.toLowerCase();
+          const entreprise = row.cells[4].textContent.toLowerCase();
+
+          const match =
+            prenom.includes(value) ||
+            nom.includes(value) ||
+            email.includes(value) ||
+            stage.includes(value) ||
+            entreprise.includes(value);
+
+          row.style.display = match ? '' : 'none';
+        });
+      });
+    }
+
       document.addEventListener("DOMContentLoaded", function () {
       const input = document.getElementById('searchEntrepriseInput');
       const rows = document.querySelectorAll('#entreprisesTable tbody tr');
@@ -335,6 +396,7 @@
       }
     });
   });
+  
 
 </script>
 

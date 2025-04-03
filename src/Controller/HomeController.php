@@ -220,6 +220,27 @@ class HomeController
                 $em->getRepository(Candidature::class)->findBy(['user' => $student])
             );
         }
+
+        $candidatures = $em->getRepository(Candidature::class)->findAll();
+
+        $candidaturesPrenomsParEntreprise = [];
+
+        foreach ($entreprises as $entreprise) {
+            $prenoms = [];
+        
+            foreach ($offres as $offre) {
+                if ((string) $offre->getEntreprise() === (string) $entreprise->getNom()) {
+                    $candidatures = $em->getRepository(Candidature::class)->findBy(['stage' => $offre]);
+        
+                    foreach ($candidatures as $candidature) {
+                        $prenoms[] = $candidature->getUser()->getPrenom();
+                    }
+                }
+            }
+        
+            $candidaturesPrenomsParEntreprise[$entreprise->getId()] = $prenoms;
+        }
+        
     
         // Vues par entreprise (somme des vues des stages)
         $vuesParEntreprise = [];
@@ -251,9 +272,8 @@ class HomeController
             'vuesParStage' => $vuesParStage,
             'vuesParEntreprise' => $vuesParEntreprise,
             'candidaturesParStage' => $candidaturesParStage,
-            'candidaturesParEntreprise' => $candidaturesParEntreprise,
-            'candidaturesParEtudiant' => $candidaturesParEtudiant,
             'candidatures' => $candidatures,
+            'candidaturesPrenomsParEntreprise' => $candidaturesPrenomsParEntreprise,
         ]);
     }
     
