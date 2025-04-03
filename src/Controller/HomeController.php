@@ -34,15 +34,10 @@ class HomeController
         $app->get('/', \App\Controller\HomeController::class . ':index')->add(UserMiddleware::class);
         $app->get('/addjob', \App\Controller\HomeController::class . ':addjob')->add(UserMiddleware::class);
         $app->post('/addjob', \App\Controller\HomeController::class . ':storeJob')->add(UserMiddleware::class);
-        $app->get('/admin/stages', \App\Controller\HomeController::class . ':adminStages')->add(AdminMiddleware::class);
-        $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
         $app->get('/login', \App\Controller\HomeController::class . ':loginPage')->setName('login');
         $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
         $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
         $app->get('/parametres', \App\Controller\HomeController::class . ':parametres')->add(UserMiddleware::class);
-        $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
         $app->get('/api/villes/search', [self::class, 'searchVilles']);
         $app->get('/mention', \App\Controller\HomeController::class . ':mentionLegales')->add(UserMiddleware::class);
 
@@ -202,7 +197,6 @@ class HomeController
             );
         }
 
-        // Nombre de candidatures par entreprise
         $candidaturesParEntreprise = [];
         foreach ($entreprises as $entreprise) {
             $count = 0;
@@ -214,7 +208,6 @@ class HomeController
             $candidaturesParEntreprise[$entreprise->getId()] = $count;
         }
 
-        // Nombre de candidatures par étudiant
         $candidaturesParEtudiant = [];
         foreach ($students as $student) {
             $candidaturesParEtudiant[$student->getId()] = count(
@@ -396,7 +389,7 @@ class HomeController
             $em->flush();
         }
 
-        return $response->withHeader('Location', '/admin/stages')->withStatus(302);
+        return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 
     public function mentionLegales(Request $request, Response $response): Response

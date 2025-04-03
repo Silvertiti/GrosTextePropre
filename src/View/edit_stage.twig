@@ -14,15 +14,18 @@
     </div>
 
     <!-- Entreprise -->
-    <select class="form-select" id="entreprise" name="entreprise" required>
-      <option value="">-- Choisir une entreprise --</option>
-      {% for entreprise in entreprises %}
-        <option value="{{ entreprise.getId() }}"
-          {% if stage.getEntreprise().getId() == entreprise.getId() %}selected{% endif %}>
-          {{ entreprise.getNom() }}
-        </option>
-      {% endfor %}
-    </select>
+    <div class="mb-3">
+      <label for="entreprise" class="form-label">Entreprise</label>
+      <select class="form-select" id="entreprise" name="entreprise" required>
+        <option value="">-- Choisir une entreprise --</option>
+        {% for entreprise in entreprises %}
+          <option value="{{ entreprise.getId() }}"
+            {% if stage.getEntreprise().getId() == entreprise.getId() %}selected{% endif %}>
+            {{ entreprise.getNom() }}
+          </option>
+        {% endfor %}
+      </select>
+    </div>
 
     <!-- Description -->
     <div class="mb-3">
@@ -33,13 +36,13 @@
     <!-- Date début -->
     <div class="mb-3">
       <label for="dateDebut" class="form-label">Date de début</label>
-      <input type="date" class="form-control" id="dateDebut" name="dateDebut"value="{{ stage.getDateDebut().format('Y-m-d') }}" required>
+      <input type="date" class="form-control" id="dateDebut" name="dateDebut" value="{{ stage.getDateDebut().format('Y-m-d') }}" required>
     </div>
 
     <!-- Date fin -->
     <div class="mb-3">
       <label for="dateFin" class="form-label">Date de fin</label>
-      <input type="date" class="form-control" id="dateFin" name="dateFin"value="{{ stage.getDateFin().format('Y-m-d') }}" required>
+      <input type="date" class="form-control" id="dateFin" name="dateFin" value="{{ stage.getDateFin().format('Y-m-d') }}" required>
     </div>
 
     <!-- Ville -->
@@ -63,7 +66,7 @@
 
     <!-- Boutons -->
     <button type="submit" class="btn btn-primary">Enregistrer</button>
-    <a href="/admin/stages" class="btn btn-secondary">Annuler</a>
+    <a href="/stages" class="btn btn-secondary">Annuler</a>
   </form>
 </div>
 {% endblock %}
