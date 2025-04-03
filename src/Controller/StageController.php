@@ -14,6 +14,7 @@ use App\Model\Candidature;
 use App\Model\StageViews;
 use App\Model\Entreprise;
 use App\Model\EntrepriseNote;
+use App\Middlewares\AdminMiddleware;
 
 class StageController
 {
@@ -31,6 +32,78 @@ class StageController
         $app->post('/stages/{id}/postuler', [self::class, 'postulerStage']);
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
         $app->post('/entreprise/{id}/noter', [self::class, 'noterEntreprise']);
+        $app->get('/stages/{id}/edit', [StageController::class, 'editStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/edit', [StageController::class, 'updateStage'])->add(AdminMiddleware::class);
+        $app->post('/stages/{id}/delete', [StageController::class, 'deleteStage'])->add(AdminMiddleware::class);
+    }
+
+    public function editStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+    
+        if (!$stage) {
+            $response->getBody()->write("Stage introuvable.");
+            return $response->withStatus(404);
+        }
+    
+        $entreprises = $em->getRepository(Entreprise::class)->findAll(); 
+    
+        $view = Twig::fromRequest($request);
+        return $view->render($response, 'edit_stage.twig', [
+            'stage' => $stage,
+            'entreprises' => $entreprises
+        ]);
+    }
+    
+
+    public function updateStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+    
+        if (!$stage) {
+            $response->getBody()->write("Stage introuvable.");
+            return $response->withStatus(404);
+        }
+    
+        $data = $request->getParsedBody();
+    
+        $villeNom = trim($data['ville_nom'] ?? '');
+        $ville = $em->getRepository(\App\Model\Ville::class)->findOneBy(['nom' => $villeNom]);
+    
+        if (!$ville) {
+            $ville = new \App\Model\Ville();
+            $ville->setNom($villeNom);
+            $em->persist($ville);
+        }
+    
+        $stage->setTitre($data['titre']);
+        $stage->setEntreprise($data['entreprise']);
+        $stage->setDescription($data['description']);
+        $stage->setDateDebut(new \DateTime($data['dateDebut']));
+        $stage->setDateFin(new \DateTime($data['dateFin']));
+        $stage->setVille($ville);
+        $stage->setMotsCles($data['motsCles'] ?? null);
+        $stage->setDisponible(isset($data['disponible']));
+    
+        $em->flush();
+    
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+    
+
+    public function deleteStage(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $stage = $em->getRepository(Stage::class)->find($args['id']);
+
+        if ($stage) {
+            $em->remove($stage);
+            $em->flush();
+        }
+
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
     public function stages(Request $request, Response $response): Response

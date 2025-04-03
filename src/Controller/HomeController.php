@@ -38,11 +38,7 @@ class HomeController
         $app->post('/admin/stages/{id}/toggle', \App\Controller\HomeController::class . ':toggleDisponibilite');
         $app->get('/login', \App\Controller\HomeController::class . ':loginPage')->setName('login');
         $app->post('/login', \App\Controller\HomeController::class . ':processLogin');
-        $app->get('/offres', [self::class, 'checkRoleBeforeAccess'])->add(UserMiddleware::class);
         $app->get('/parametres', \App\Controller\HomeController::class . ':parametres')->add(UserMiddleware::class);
-        $app->get('/stages/{id}/edit', [HomeController::class, 'editStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/edit', [HomeController::class, 'updateStage'])->add(AdminMiddleware::class);
-        $app->post('/stages/{id}/delete', [HomeController::class, 'deleteStage'])->add(AdminMiddleware::class);
         $app->get('/api/villes/search', [self::class, 'searchVilles']);
         $app->get('/mention', \App\Controller\HomeController::class . ':mentionLegales')->add(UserMiddleware::class);
 
@@ -374,17 +370,6 @@ class HomeController
             ->withStatus(302);
     }
     
-
-    public function adminStages(Request $request, Response $response): Response
-    {
-        $em = $this->container->get(EntityManager::class);
-        $offres = $em->getRepository(Stage::class)->findAll();
-
-        $view = Twig::fromRequest($request);
-        return $view->render($response, 'admin_stage.twig', [
-            'offres' => $offres
-        ]);
-    }
 
     public function toggleDisponibilite(Request $request, Response $response, array $args): Response
     {
