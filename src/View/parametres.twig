@@ -50,7 +50,29 @@
       <div class="main-content">
         <div id="profile">
           <div class="section-title">Profil</div>
-          <p>Modifier vos informations personnelles ici.</p>
+          <form method="POST" action="/parametres">
+                <div class="mb-3">
+                    <label for="prenom" class="form-label">Prénom</label>
+                    <input type="text" class="form-control" name="prenom" id="prenom" value="{{ user.prenom }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="nom" class="form-label">Nom</label>
+                    <input type="text" class="form-control" name="nom" id="nom" value="{{ user.nom }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Adresse email</label>
+                    <input type="email" class="form-control" name="email" id="email" value="{{ user.email }}" required />
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Nouveau mot de passe</label>
+                    <input type="password" class="form-control" name="password" id="password" />
+                </div>
+
+                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            </form>
         </div>
 
         {% if session.role == 'admin' %}

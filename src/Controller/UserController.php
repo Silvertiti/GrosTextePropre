@@ -28,7 +28,7 @@ class UserController
         $app->post('/users/{id}/delete', [UserController::class, 'delete'])->add(AdminMiddleware::class);
         $app->get('/users/{id}/edit', [UserController::class, 'editForm'])->add(RoleCheckMiddleware::class);
         $app->post('/users/{id}/edit', [UserController::class, 'update'])->add(RoleCheckMiddleware::class); 
-
+        $app->post('/parametres', [UserController::class, 'updateProfile'])->add(RoleCheckMiddleware::class);
         
     }
     public function createForm(Request $request, Response $response): Response
@@ -144,6 +144,36 @@ class UserController
         }
         $em->flush();
 
+        return $response->withHeader('Location', '/parametres')->withStatus(302);
+    }
+
+        public function updateProfile(Request $request, Response $response): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $session = $this->container->get('session');
+        $userId = $session->get('idUser'); // Récupérer l'ID de l'utilisateur connecté
+        $user = $em->getRepository(User::class)->find($userId);
+
+        if (!$user) {
+            $response->getBody()->write("Utilisateur non trouvé.");
+            return $response->withStatus(404);
+        }
+
+        $data = $request->getParsedBody();
+        
+        // Mise à jour des données de l'utilisateur
+        $user->setPrenom($data['prenom']);
+        $user->setNom($data['nom']);
+        $user->setEmail($data['email']);
+
+        // Mise à jour du mot de passe si fourni
+        if (!empty($data['password'])) {
+            $user->setMotDePasse(password_hash($data['password'], PASSWORD_BCRYPT));
+        }
+
+        $em->flush();
+
+        // Rediriger vers la page des paramètres après la mise à jour
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
