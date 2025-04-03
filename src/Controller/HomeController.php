@@ -13,6 +13,8 @@ use App\Model\Ville;
 use App\Model\Entreprise;
 use DateTime;
 use App\Model\StageViews;
+use App\Model\Candidature;
+
 
 use App\Middlewares\AdminMiddleware;
 use App\Middlewares\UserMiddleware;
@@ -192,6 +194,54 @@ class HomeController
     
             $vuesParStage[$offre->getId()] = $count;
         }
+        // Nombre de candidatures par stage
+        $candidaturesParStage = [];
+        foreach ($offres as $offre) {
+            $candidaturesParStage[$offre->getId()] = count(
+                $em->getRepository(Candidature::class)->findBy(['stage' => $offre])
+            );
+        }
+
+        // Nombre de candidatures par entreprise
+        $candidaturesParEntreprise = [];
+        foreach ($entreprises as $entreprise) {
+            $count = 0;
+            foreach ($offres as $offre) {
+                if ((string) $offre->getEntreprise() === (string) $entreprise->getId()) {
+                    $count += $candidaturesParStage[$offre->getId()] ?? 0;
+                }
+            }
+            $candidaturesParEntreprise[$entreprise->getId()] = $count;
+        }
+
+        // Nombre de candidatures par étudiant
+        $candidaturesParEtudiant = [];
+        foreach ($students as $student) {
+            $candidaturesParEtudiant[$student->getId()] = count(
+                $em->getRepository(Candidature::class)->findBy(['user' => $student])
+            );
+        }
+
+        $candidatures = $em->getRepository(Candidature::class)->findAll();
+
+        $candidaturesPrenomsParEntreprise = [];
+
+        foreach ($entreprises as $entreprise) {
+            $prenoms = [];
+        
+            foreach ($offres as $offre) {
+                if ((string) $offre->getEntreprise() === (string) $entreprise->getNom()) {
+                    $candidatures = $em->getRepository(Candidature::class)->findBy(['stage' => $offre]);
+        
+                    foreach ($candidatures as $candidature) {
+                        $prenoms[] = $candidature->getUser()->getPrenom();
+                    }
+                }
+            }
+        
+            $candidaturesPrenomsParEntreprise[$entreprise->getId()] = $prenoms;
+        }
+        
     
         // Vues par entreprise (somme des vues des stages)
         $vuesParEntreprise = [];
@@ -206,6 +256,8 @@ class HomeController
     
             $vuesParEntreprise[$entreprise->getId()] = $vuesTotal;
         }
+
+        $candidatures = $em->getRepository(\App\Model\Candidature::class)->findAll();
     
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
@@ -219,7 +271,10 @@ class HomeController
             'entreprises' => $entreprises,
             'entreprisesParId' => $entreprisesParId,
             'vuesParStage' => $vuesParStage,
-            'vuesParEntreprise' => $vuesParEntreprise
+            'vuesParEntreprise' => $vuesParEntreprise,
+            'candidaturesParStage' => $candidaturesParStage,
+            'candidatures' => $candidatures,
+            'candidaturesPrenomsParEntreprise' => $candidaturesPrenomsParEntreprise,
         ]);
     }
     

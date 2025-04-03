@@ -79,7 +79,6 @@ class StageController
         $qb->setFirstResult($offset)->setMaxResults($limit);
         $offres = $qb->getQuery()->getResult();
 
-        // Comptage des vues
         $vuesParStage = [];
         foreach ($offres as $offre) {
             $count = $em->createQueryBuilder()
@@ -93,7 +92,6 @@ class StageController
             $vuesParStage[$offre->getId()] = $count;
         }
 
-        // Mots-clés
         $allStages = $em->getRepository(Stage::class)->findAll();
         $motsClesList = [];
         foreach ($allStages as $stage) {
@@ -108,7 +106,6 @@ class StageController
         }
         sort($motsClesList);
 
-        // Favoris
         $favorisIds = [];
         if ($userId) {
             $favoris = $em->getRepository(Favori::class)->findBy(['user' => $userId]);
@@ -117,19 +114,24 @@ class StageController
             }
         }
 
-        // Entreprises associées (ID → nom)
         $entreprises = $em->getRepository(Entreprise::class)->findAll();
         $entreprisesParId = [];
         foreach ($entreprises as $e) {
             $entreprisesParId[$e->getId()] = $e->getNom();
         }
-        $entreprises = $em->getRepository(Entreprise::class)->findAll();
         $entreprisesParId2 = [];
         foreach ($entreprises as $e) {
             $entreprisesParId2[$e->getId()] = $e->getNoteEvaluation();
         }
 
-        // Flash message
+        $postulesIds = [];
+        if ($userId) {
+            $candidatures = $em->getRepository(Candidature::class)->findBy(['user' => $userId]);
+            foreach ($candidatures as $c) {
+                $postulesIds[] = $c->getStage()->getId();
+            }
+        }
+
         $flashMessage = $session->get('flash_message');
         $session->delete('flash_message');
 
@@ -147,8 +149,8 @@ class StageController
             'flash_message' => $flashMessage,
             'vuesParStage' => $vuesParStage,
             'entreprisesParId' => $entreprisesParId,
-            'entreprisesParId2' => $entreprisesParId2
-
+            'entreprisesParId2' => $entreprisesParId2,
+            'stagesPostules' => $postulesIds
         ]);
     }
 
@@ -295,50 +297,62 @@ class StageController
     {
         $em = $this->container->get(EntityManager::class);
         $data = $request->getParsedBody();
-
-        $stage = $em->getRepository(Stage::class)->find($args['id']);
+    
+        $stage = $em->getRepository(\App\Model\Stage::class)->find($args['id']);
         if (!$stage) {
             $response->getBody()->write("Stage non trouvé.");
             return $response->withStatus(404);
         }
-
+    
         $session = $this->container->get('session');
         $userId = $session->get('idUser');
-        $user = $em->getRepository(User::class)->find($userId);
-
+        $user = $em->getRepository(\App\Model\User::class)->find($userId);
+    
         if (!$user) {
             $response->getBody()->write("Utilisateur non trouvé.");
             return $response->withStatus(404);
         }
-
+    
+        // Vérifier si l'utilisateur a déjà postulé
+        $existing = $em->getRepository(\App\Model\Candidature::class)->findOneBy([
+            'user' => $user,
+            'stage' => $stage
+        ]);
+    
+        if ($existing) {
+            $session->set('flash_message', 'Vous avez déjà postulé à ce stage.');
+            return $response->withHeader('Location', '/stages')->withStatus(302);
+        }
+    
+        // Gérer le fichier CV
         $uploadedFile = $request->getUploadedFiles()['cv'] ?? null;
-
         if ($uploadedFile && $uploadedFile->getError() === UPLOAD_ERR_OK) {
             $fileName = uniqid('cv_', true) . '.' . pathinfo($uploadedFile->getClientFilename(), PATHINFO_EXTENSION);
             $uploadDirectory = $_SERVER['DOCUMENT_ROOT'] . '/GrosTextePropre/public/uploads/cv/';
-
+    
             if (!is_dir($uploadDirectory)) {
                 mkdir($uploadDirectory, 0777, true);
             }
-
+    
             $fullPath = $uploadDirectory . $fileName;
             $uploadedFile->moveTo($fullPath);
-
+    
             $filePath = '/uploads/cv/' . $fileName;
         } else {
             $response->getBody()->write("Aucun fichier CV téléchargé.");
             return $response->withStatus(400);
         }
-
-        $candidature = new Candidature($stage, $user, $data['motivation']);
+    
+        // Enregistrement de la candidature
+        $candidature = new \App\Model\Candidature($stage, $user, $data['motivation']);
         $candidature->setCvPath($filePath);
         $candidature->setCreatedAt(new \DateTime());
-
+    
         $em->persist($candidature);
         $em->flush();
-
+    
         $session->set('flash_message', 'Votre candidature a bien été envoyée.');
-
+    
         return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 }
