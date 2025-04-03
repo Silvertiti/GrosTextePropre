@@ -1,9 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark">
   <div class="container-fluid">
-    <!-- Logo/Titre -->
-    <a class="navbar-brand fw-bold fs-3" href="#">GROS TEXTE</a> <!-- Taille augmentée -->
+    <a class="navbar-brand fw-bold fs-3" href="#">GROS TEXTE</a>
 
-    <!-- Bouton hamburger -->
     <button 
       class="navbar-toggler" 
       type="button" 
@@ -15,9 +13,7 @@
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Menu -->
     <div class="collapse navbar-collapse" id="navbarMobile">
-      <!-- Partie gauche -->
       <ul class="navbar-nav me-auto mb-3 mb-lg-0">
         <li class="nav-item">
           <a class="nav-link fs-5 px-3 py-2" href="/">Accueil</a>
@@ -33,12 +29,11 @@
         </li>
       </ul>
 
-      <!-- Partie droite (icône) -->
       <ul class="navbar-nav">
         <li class="nav-item">
           <a class="nav-link fs-4 px-3 py-2" href="login.html">
             <svg class="icon" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 16 16">
-              <path d="..."/> <!-- Conservez votre path d'origine -->
+              <path d="..."/>
             </svg>
           </a>
         </li>
@@ -48,11 +43,10 @@
 </nav>
 
 <style>
-/* ----- Menu Mobile Plein Écran ----- */
 @media (max-width: 991.98px) {
   .navbar-collapse {
     position: fixed;
-    top: 70px; /* Ajustez selon la hauteur de votre navbar */
+    top: 70px;
     left: 0;
     right: 0;
     bottom: 0;
@@ -72,17 +66,16 @@
   }
 
   .nav-link {
-    font-size: 1.8rem !important; /* Taille XXL sur mobile */
+    font-size: 1.8rem !important;
     padding: 1rem !important;
   }
 
   .icon {
-    width: 40px !important; /* Agrandir l'icône */
+    width: 40px !important;
     height: 40px !important;
   }
 }
 
-/* Couleurs */
 .navbar {
   background-color: #ff6b6b !important;
 }

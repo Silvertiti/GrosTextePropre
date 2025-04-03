@@ -7,11 +7,10 @@
     --text-light: #f8f9fa;
   }
 
-  /* ===== Structure de base ===== */
   .settings-container {
     display: flex;
     flex-direction: column;
-    min-height: calc(100vh - 56px); /* Compensation pour la navbar */
+    min-height: calc(100vh - 56px);
   }
 
   @media (min-width: 992px) {
@@ -20,20 +19,18 @@
     }
   }
 
-  /* ===== Sidebar ===== */
   .settings-sidebar {
     background: var(--sidebar-bg);
     padding: 1rem 0;
     overflow-y: auto;
   }
 
-  @media (max-width: 991.98px) {
+  @media (max-width: 1000px) {
     .settings-sidebar {
       display: flex;
       overflow-x: auto;
       white-space: nowrap;
-      -webkit-overflow-scrolling: touch;
-      padding: 0.5rem;
+      padding: 3rem;
       border-bottom: 1px solid rgba(0,0,0,0.1);
     }
   }
@@ -44,7 +41,7 @@
     gap: 0.25rem;
   }
 
-  @media (max-width: 991.98px) {
+  @media (max-width: 1000px) {
     .settings-nav {
       flex-direction: row;
     }
@@ -60,7 +57,7 @@
     transition: all 0.2s;
   }
 
-  @media (max-width: 991.98px) {
+  @media (max-width: 1000px) {
     .settings-nav-link {
       padding: 0.75rem;
       border-radius: 4px;
@@ -85,10 +82,9 @@
   }
 
   .settings-nav-link i {
-    font-size: 1.1rem;
+    font-size: 1.3rem;
   }
 
-  /* ===== Contenu principal ===== */
   .settings-content {
     flex: 1;
     padding: 1.5rem;
@@ -122,7 +118,6 @@
     font-weight: 600;
   }
 
-  /* ===== Tables responsives ===== */
   .table-responsive {
     width: 100%;
     overflow-x: auto;
@@ -142,7 +137,6 @@
     background: #f1f3f5;
   }
 
-  /* ===== Éléments de formulaire ===== */
   .search-box {
     margin-bottom: 1.5rem;
   }
@@ -152,7 +146,6 @@
     font-size: 0.8rem;
   }
 
-  /* ===== Badges ===== */
   .badge {
     font-weight: 500;
     padding: 0.35em 0.65em;
@@ -161,7 +154,6 @@
 
 {% block content %}
 <div class="settings-container">
-  <!-- Sidebar -->
   <div class="settings-sidebar col-lg-2">
     <nav class="settings-nav">
       <a href="#profile" class="settings-nav-link active">
