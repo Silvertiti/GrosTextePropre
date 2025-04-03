@@ -166,19 +166,19 @@ class HomeController
         $view = Twig::fromRequest($request);
         $session = $this->container->get('session');
         $em = $this->container->get(EntityManager::class); 
-
     
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
         $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']); 
         $offres = $em->getRepository(Stage::class)->findAll();
-        $entreprises = $em->getRepository(\App\Model\Entreprise::class)->findAll();
-        
-            $entreprisesParId = [];
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();
+    
+        // Mapping ID → Nom
+        $entreprisesParId = [];
         foreach ($entreprises as $e) {
             $entreprisesParId[$e->getId()] = $e->getNom();
         }
-        
-        // Comptage des vues
+    
+        // Vues par stage
         $vuesParStage = [];
         foreach ($offres as $offre) {
             $count = $em->createQueryBuilder()
@@ -188,10 +188,24 @@ class HomeController
                 ->setParameter('stage', $offre)
                 ->getQuery()
                 ->getSingleScalarResult();
-
+    
             $vuesParStage[$offre->getId()] = $count;
         }
-
+    
+        // Vues par entreprise (somme des vues des stages)
+        $vuesParEntreprise = [];
+        foreach ($entreprises as $entreprise) {
+            $vuesTotal = 0;
+    
+            foreach ($offres as $stage) {
+                if ((string) $stage->getEntreprise() === (string) $entreprise->getId()) {
+                    $vuesTotal += $vuesParStage[$stage->getId()] ?? 0;
+                }
+            }
+    
+            $vuesParEntreprise[$entreprise->getId()] = $vuesTotal;
+        }
+    
         return $view->render($response, 'parametres.twig', [
             'title' => 'Settings',
             'session' => [
@@ -203,11 +217,11 @@ class HomeController
             'offres' => $offres,
             'entreprises' => $entreprises,
             'entreprisesParId' => $entreprisesParId,
-            'vuesParStage' => $vuesParStage
-
-            
+            'vuesParStage' => $vuesParStage,
+            'vuesParEntreprise' => $vuesParEntreprise
         ]);
     }
+    
     
     
 

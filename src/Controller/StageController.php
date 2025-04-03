@@ -13,6 +13,7 @@ use App\Model\Favori;
 use App\Model\Candidature;
 use App\Model\StageViews;
 use App\Model\Entreprise;
+use App\Model\EntrepriseNote;
 
 class StageController
 {
@@ -29,6 +30,7 @@ class StageController
         $app->get('/stages/{id}/postuler', [self::class, 'postuler']);
         $app->post('/stages/{id}/postuler', [self::class, 'postulerStage']);
         $app->post('/favoris/{stageId}/toggle', [self::class, 'toggleFavori']);
+        $app->post('/entreprise/{id}/noter', [self::class, 'noterEntreprise']);
     }
 
     public function stages(Request $request, Response $response): Response
@@ -121,6 +123,11 @@ class StageController
         foreach ($entreprises as $e) {
             $entreprisesParId[$e->getId()] = $e->getNom();
         }
+        $entreprises = $em->getRepository(Entreprise::class)->findAll();
+        $entreprisesParId2 = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId2[$e->getId()] = $e->getNoteEvaluation();
+        }
 
         // Flash message
         $flashMessage = $session->get('flash_message');
@@ -139,7 +146,9 @@ class StageController
             'now' => new \DateTimeImmutable('now'),
             'flash_message' => $flashMessage,
             'vuesParStage' => $vuesParStage,
-            'entreprisesParId' => $entreprisesParId
+            'entreprisesParId' => $entreprisesParId,
+            'entreprisesParId2' => $entreprisesParId2
+
         ]);
     }
 
@@ -204,6 +213,7 @@ class StageController
             }
         }
     
+        // 🔁 Ici on retrouve l'objet Entreprise à partir du nom (string)
         $entreprise = $em->getRepository(Entreprise::class)->findOneBy([
             'nom' => $stage->getEntreprise()
         ]);
@@ -215,22 +225,77 @@ class StageController
         foreach ($entreprises as $e) {
             $entreprisesParId[$e->getId()] = $e->getNom();
         }
+        $entreprisesParId2 = [];
+        foreach ($entreprises as $e) {
+            $entreprisesParId2[$e->getId()] = $e->getNoteEvaluation();
+        }
+
+        $noteExistante = $em->getRepository(EntrepriseNote::class)->findOneBy([
+            'entreprise' => $entreprise,
+            'user' => $user
+        ]);
     
+        $hasAlreadyRated = false;
+        if ($user && $entreprise) {
+            $noteExistante = $em->getRepository(EntrepriseNote::class)
+                ->findOneBy(['entreprise' => $entreprise, 'user' => $user]);
+        
+            $hasAlreadyRated = $noteExistante !== null;
+        }
         $view = Twig::fromRequest($request);
         return $view->render($response, 'postuler_stage.twig', [
             'stage' => $stage,
             'villeNom' => $villeNom,
             'entreprisesParId' => $entreprisesParId,
-            'entrepriseId' => $entrepriseId
+            'entreprisesParId2' => $entreprisesParId2,
+            'hasAlreadyRated' => $hasAlreadyRated
         ]);
     }
+
+    public function noterEntreprise(Request $request, Response $response, array $args): Response
+    {
+        $em = $this->container->get(EntityManager::class);
+        $id = (int) $args['id'];
+        $note = (int) ($request->getParsedBody()['note'] ?? 0);
     
+        $session = $this->container->get('session');
+        $userId = $session->get('idUser');
+        $user = $em->getRepository(User::class)->find($userId);
+        $entreprise = $em->getRepository(Entreprise::class)->find($id);
+    
+        if (!$entreprise || !$user || $note < 1 || $note > 5) {
+            return $response->withStatus(400)->write("Données invalides.");
+        }
+    
+        $repo = $em->getRepository(EntrepriseNote::class);
+        $ancienneNote = $repo->findOneBy(['entreprise' => $entreprise, 'user' => $user]);
+    
+        if ($ancienneNote) {
+            $ancienneNote->setNote($note);
+        } else {
+            $nouvelleNote = new EntrepriseNote($entreprise, $user, $note);
+            $em->persist($nouvelleNote);
+        }
+    
+        $em->flush();
+    
+        // Calcul de la moyenne
+        $notes = $repo->findBy(['entreprise' => $entreprise]);
+        $somme = array_sum(array_map(fn($n) => $n->getNote(), $notes));
+        $moyenne = count($notes) > 0 ? round($somme / count($notes)) : 0;
+    
+        $entreprise->setNoteEvaluation($moyenne);
+        $em->flush();
+    
+        return $response->withHeader('Location', '/stages')->withStatus(302);
+    }
+
     
     public function postulerStage(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);
         $data = $request->getParsedBody();
-        
+
         $stage = $em->getRepository(Stage::class)->find($args['id']);
         if (!$stage) {
             $response->getBody()->write("Stage non trouvé.");
@@ -267,7 +332,7 @@ class StageController
 
         $candidature = new Candidature($stage, $user, $data['motivation']);
         $candidature->setCvPath($filePath);
-        $candidature->setCreatedAt(new \DateTime()); 
+        $candidature->setCreatedAt(new \DateTime());
 
         $em->persist($candidature);
         $em->flush();

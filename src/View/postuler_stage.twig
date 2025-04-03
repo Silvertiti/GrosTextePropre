@@ -4,26 +4,46 @@
 
 {% block content %}
 <div class="container my-5">
-    <h1 class="text-center mb-4">Candidature pour le stage: {{ stage.getTitre() }}</h1>
+    <h1 class="text-center mb-4">Candidature pour le stage : {{ stage.getTitre() }}</h1>
 
     <div class="card">
         <div class="card-body">
             <h5 class="card-title">{{ stage.getTitre() }}</h5>
+
             <h6 class="card-subtitle text-muted">
                 {{ entreprisesParId[stage.getEntreprise()]|default('Entreprise inconnue') }}
             </h6>
-            <p><strong> Description: </strong><class="card-text">{{ stage.getDescription() }}</p>
-            <p><strong>Lieu: </strong>{{ villeNom }}</p>  
+
+            {# Note de l'entreprise #}
+            {% set note = entreprisesParId2[stage.getEntreprise()]|default(0) %}
+            <div class="mb-2 mt-2">
+                <strong>Note de l'entreprise :</strong>
+                {% for i in 1..5 %}
+                    {% if i <= note %}
+                        <span style="color: gold;">&#9733;</span>
+                    {% else %}
+                        <span style="color: gold;">&#9734;</span>
+                    {% endif %}
+                {% endfor %}
+                <small>({{ note }}/5)</small>
+
+                {% if not hasAlreadyRated %}
+                    <button class="btn btn-sm btn-outline-primary ms-2" onclick="openRatingModal()">Noter</button>
+                {% endif %}
+            </div>
+
+            <p><strong>Description :</strong> <span class="card-text">{{ stage.getDescription() }}</span></p>
+            <p><strong>Lieu :</strong> {{ villeNom }}</p>
             {% if stage.getMotsCles() %}
-                <p><strong>Mot clés: </strong>{{ stage.getMotsCles() }}</p>
+                <p><strong>Mots-clés :</strong> {{ stage.getMotsCles() }}</p>
             {% endif %}
-            <p><strong>Disponibilité: </strong>{{ stage.isDisponible() ? 'Disponible' : 'Indisponible' }}</p>
-            <p><strong>Date de début : </strong>{{ stage.getDateDebut()|date('d/m/Y') }}</p>
-            <p><strong>Date de fin : </strong>{{ stage.getDateFin()|date('d/m/Y') }}</p>
+            <p><strong>Disponibilité :</strong> {{ stage.isDisponible() ? 'Disponible' : 'Indisponible' }}</p>
+            <p><strong>Date de début :</strong> {{ stage.getDateDebut()|date('d/m/Y') }}</p>
+            <p><strong>Date de fin :</strong> {{ stage.getDateFin()|date('d/m/Y') }}</p>
         </div>
     </div>
 
-    <form method="POST" action="/stages/{{ stage.getId() }}/postuler" enctype="multipart/form-data">
+    <form method="POST" action="/stages/{{ stage.getId() }}/postuler" enctype="multipart/form-data" class="mt-4">
         <div class="mb-3">
             <label for="motivation" class="form-label">Motivation</label>
             <textarea class="form-control" id="motivation" name="motivation" rows="4" required></textarea>
@@ -37,4 +57,37 @@
         <button type="submit" class="btn btn-success w-100">Envoyer ma candidature</button>
     </form>
 </div>
+
+{# 🚀 Fenêtre modale de notation #}
+<div class="modal fade" id="ratingModal" tabindex="-1" aria-labelledby="ratingModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="/entreprise/{{ stage.getEntreprise() }}/noter">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="ratingModalLabel">Noter l'entreprise</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body text-center">
+          <div class="mb-3">
+            {% for i in 1..5 %}
+              <input type="radio" class="btn-check" name="note" id="note{{ i }}" value="{{ i }}" required>
+              <label class="btn btn-outline-warning" for="note{{ i }}">&#9733;</label>
+            {% endfor %}
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Envoyer</button>
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openRatingModal() {
+    var modal = new bootstrap.Modal(document.getElementById('ratingModal'));
+    modal.show();
+  }
+</script>
 {% endblock %}
