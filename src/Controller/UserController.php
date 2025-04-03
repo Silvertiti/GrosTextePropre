@@ -168,7 +168,7 @@ class UserController
     $user->setEmail($data['email']);
 
     // Mise à jour du mot de passe si fourni
-    if (!empty($data['password']) && $data['password'] === $data['confirm_password']) {
+    if (!empty($data['password'])) {
         $user->setMotDePasse(password_hash($data['password'], PASSWORD_BCRYPT));
     }
 
