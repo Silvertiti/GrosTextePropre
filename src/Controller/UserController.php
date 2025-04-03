@@ -2,6 +2,9 @@
 
 namespace App\Controller;
 
+use App\Model\Entreprise;
+use App\Model\Stage;
+use
 use App\Model\User;
 use Doctrine\ORM\EntityManager;
 use Psr\Container\ContainerInterface;
@@ -29,7 +32,6 @@ class UserController
         $app->get('/users/{id}/edit', [UserController::class, 'editForm'])->add(RoleCheckMiddleware::class);
         $app->post('/users/{id}/edit', [UserController::class, 'update'])->add(RoleCheckMiddleware::class); 
         $app->post('/parametres', [UserController::class, 'updateProfile'])->add(RoleCheckMiddleware::class);
-        
     }
     public function createForm(Request $request, Response $response): Response
     {
