@@ -207,7 +207,7 @@ class StageController
 
         $em->flush();
 
-        return $response->withHeader('Location', '/stages')->withStatus(302); // Redirige vers la page des stages admin
+        return $response->withHeader('Location', '/stages')->withStatus(302);
     }
     public function deleteStage(Request $request, Response $response, array $args): Response
     {
@@ -219,7 +219,7 @@ class StageController
             $em->flush();
         }
 
-        return $response->withHeader('Location', '/stages')->withStatus(302); // Redirige vers la page des stages admin
+        return $response->withHeader('Location', '/stages')->withStatus(302);
     }
 
 
@@ -383,7 +383,7 @@ class StageController
             return $response->withStatus(404);
         }
     
-        // Vérifier si l'utilisateur a déjà postulé
+        
         $existing = $em->getRepository(\App\Model\Candidature::class)->findOneBy([
             'user' => $user,
             'stage' => $stage
@@ -413,7 +413,7 @@ class StageController
             return $response->withStatus(400);
         }
     
-        // Enregistrement de la candidature
+        
         $candidature = new \App\Model\Candidature($stage, $user, $data['motivation']);
         $candidature->setCvPath($filePath);
         $candidature->setCreatedAt(new \DateTime());
