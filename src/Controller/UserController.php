@@ -152,7 +152,7 @@ class UserController
     {
         $em = $this->container->get(EntityManager::class);
         $session = $this->container->get('session');
-        $userId = $session->get('idUser'); // Récupérer l'ID de l'utilisateur connecté
+        $userId = $session->get('idUser');
         $user = $em->getRepository(User::class)->find($userId);
 
         if (!$user) {
@@ -162,19 +162,19 @@ class UserController
 
         $data = $request->getParsedBody();
         
-        // Mise à jour des données de l'utilisateur
+        
         $user->setPrenom($data['prenom']);
         $user->setNom($data['nom']);
         $user->setEmail($data['email']);
 
-        // Mise à jour du mot de passe si fourni
+        
         if (!empty($data['password'])) {
             $user->setMotDePasse(password_hash($data['password'], PASSWORD_BCRYPT));
         }
 
         $em->flush();
 
-        // Rediriger vers la page des paramètres après la mise à jour
+        
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
