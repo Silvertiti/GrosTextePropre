@@ -222,7 +222,7 @@
         <a href="#étudiants" class="nav-link">Gestion Étudiants</a>
       {% endif %}
       
-      {% if session.role == 'admin' or session.role == 'etudiant' %}
+      {% if session.role == 'admin' or session.role == 'user' %}
         <a href="#candidature" class="nav-link">Gestion Candidature</a>
       {% endif %}
     </nav>
@@ -256,7 +256,7 @@
           </form>
         </div>
 
-        {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'etudiant' %}
+        {% if session.role == 'admin' or session.role == 'tuteur' or session.role == 'user' %}
         <div id="entreprise" style="display:none">
           <div class="section-title">Gestion Entreprises</div>
 
