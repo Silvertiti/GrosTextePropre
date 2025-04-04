@@ -625,62 +625,43 @@
             <input type="text" id="searchCandidatureInput" class="form-control" placeholder="Rechercher une candidature...">
           </div>
 
-          {% if candidatures is not empty %}
-            <div class="table-responsive">
-              <table class="responsive-table" id="candidaturesTable">
-                <thead>
-                  <tr>
-                    <th>Prénom</th>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Stage</th>
-                    <th>Entreprise</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for candidature in candidatures %}
-                    <tr>
-                      <td data-label="Prénom">{{ candidature.getUser().getPrenom() }}</td>
-                      <td data-label="Nom">{{ candidature.getUser().getNom() }}</td>
-                      <td data-label="Email">{{ candidature.getUser().getEmail() }}</td>
-                      <td data-label="Stage">{{ candidature.getStage().getTitre() }}</td>
-                      <td data-label="Entreprise">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
-                    </tr>
-                  {% endfor %}
-                </tbody>
+              {% if candidatures is not empty %}
+              <table class="table">
+                  <thead>
+                      <tr>
+                          <th>Prénom</th>
+                          <th>Nom</th>
+                          <th>Email</th>
+                          <th>Stage</th>
+                          <th>Entreprise</th>
+                          <th>État</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      {% for candidature in candidatures %}
+                          <tr>
+                              <td>{{ candidature.user.prenom }}</td>
+                              <td>{{ candidature.user.nom }}</td>
+                              <td>{{ candidature.user.email }}</td>
+                              <td>{{ candidature.stage.titre }}</td>
+                              <td data-label="Entreprise">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
+                              <td>
+                                  {% if candidature.etat == 'en attente' %}
+                                      <span class="badge bg-warning">En attente</span>
+                                  {% elseif candidature.etat == 'accepte' %}
+                                      <span class="badge bg-success">Acceptée</span>
+                                  {% else %}
+                                      <span class="badge bg-danger">Refusée</span>
+                                  {% endif %}
+                              </td>
+                          </tr>
+                      {% endfor %}
+                  </tbody>
               </table>
-            </div>
-            
-            <div class="table-card-container" id="candidaturesCards">
-              {% for candidature in candidatures %}
-                <div class="table-card">
-                  <div class="card-row">
-                    <span class="card-label">Prénom:</span>
-                    <span class="card-value">{{ candidature.getUser().getPrenom() }}</span>
-                  </div>
-                  <div class="card-row">
-                    <span class="card-label">Nom:</span>
-                    <span class="card-value">{{ candidature.getUser().getNom() }}</span>
-                  </div>
-                  <div class="card-row">
-                    <span class="card-label">Email:</span>
-                    <span class="card-value">{{ candidature.getUser().getEmail() }}</span>
-                  </div>
-                  <div class="card-row">
-                    <span class="card-label">Stage:</span>
-                    <span class="card-value">{{ candidature.getStage().getTitre() }}</span>
-                  </div>
-                  <div class="card-row">
-                    <span class="card-label">Entreprise:</span>
-                    <span class="card-value">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</span>
-                  </div>
-                </div>
-              {% endfor %}
-            </div>
-          {% else %}
-            <div class="alert alert-info">Aucune candidature enregistrée.</div>
-          {% endif %}
-        </div>
+              {% else %}
+              <p>Aucune candidature trouvée.</p>
+              {% endif %}
+          </div>
         {% endif %}
       </div>
     </div>
