@@ -111,6 +111,15 @@
     margin-top: 10px;
     flex-wrap: wrap;
   }
+  .card {
+    border: none;
+    border-left: 5px solid #ff6b6b;
+    transition: all 0.3s ease-in-out;
+  }
+
+  .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
   
   @media (max-width: 991.98px) {
     .sidebar {
@@ -207,8 +216,12 @@
 
 <div class="container-fluid">
   <div class="row">
+
     <nav class="col-md-2 sidebar d-flex flex-column" id="sidebar">
-      <a href="#profile" class="nav-link active">Gestion du Compte</a>
+      <a href="#accueil" class="nav-link active">Accueil</a>
+      {% if session.role == 'admin' or session.role == 'tuteur' %}
+        <a href="#profile" class="nav-link active">Gestion du Compte</a>
+      {% endif %}
 
       {% if session.role == 'admin' or session.role == 'tuteur' %}
         <a href="#entreprise" class="nav-link">Gestion Entreprises</a>
@@ -229,7 +242,27 @@
 
     <div class="col-md-10 p-0">
       <div class="main-content">
-        <div id="profile">
+        <div id="accueil">
+          <div class="card shadow-sm p-4 mb-4 bg-white rounded">
+            <h2 class="mb-3">👋 Bonjour <strong>{{ user.prenom|capitalize }}</strong></h2>
+            <p class="lead">Bienvenue sur la page des paramètres de votre espace personnel.</p>
+            
+            <hr class="my-4">
+
+            <p>
+              Cette page vous permet de gérer les différentes entités du système :
+              <strong>votre profil</strong>, les <strong>entreprises</strong>, les <strong>offres de stage</strong>, les <strong>utilisateurs</strong> et les <strong>candidatures</strong>.
+            </p>
+
+            <p>
+              Utilisez le menu latéral à gauche pour naviguer facilement entre les sections.
+              Les fonctionnalités affichées dépendent de votre rôle :
+              <span class="badge bg-info text-dark">{{ session.role|capitalize }}</span>.
+            </p>
+          </div>
+        </div>
+
+        <div id="profile" style="display: none;">
           <div class="section-title">Profil</div>
           <form method="POST" action="/parametres">
             <div class="mb-3">
