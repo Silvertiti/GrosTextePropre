@@ -174,18 +174,21 @@ class HomeController
         $session = $this->container->get('session');
         $em = $this->container->get(EntityManager::class); 
     
+        $role = $session->get('role');
+        $userId = $session->get('idUser');
+        
         $students = $em->getRepository(User::class)->findBy(['role' => 'user']);
         $tuteurs = $em->getRepository(User::class)->findBy(['role' => 'tuteur']); 
         $offres = $em->getRepository(Stage::class)->findAll();
         $entreprises = $em->getRepository(Entreprise::class)->findAll();
-    
-        // Mapping ID → Nom
+        
+        // Mapping ID → Nom des entreprises pour affichage
         $entreprisesParId = [];
         foreach ($entreprises as $e) {
             $entreprisesParId[$e->getId()] = $e->getNom();
         }
     
-        // Vues par stage
+        // Calculer les vues par stage
         $vuesParStage = [];
         foreach ($offres as $offre) {
             $count = $em->createQueryBuilder()
@@ -195,17 +198,19 @@ class HomeController
                 ->setParameter('stage', $offre)
                 ->getQuery()
                 ->getSingleScalarResult();
-    
+        
             $vuesParStage[$offre->getId()] = $count;
         }
-        // Nombre de candidatures par stage
+    
+        // Calculer le nombre de candidatures par stage
         $candidaturesParStage = [];
         foreach ($offres as $offre) {
             $candidaturesParStage[$offre->getId()] = count(
                 $em->getRepository(Candidature::class)->findBy(['stage' => $offre])
             );
         }
-
+    
+        // Calculer le nombre de candidatures par entreprise
         $candidaturesParEntreprise = [];
         foreach ($entreprises as $entreprise) {
             $count = 0;
@@ -216,56 +221,43 @@ class HomeController
             }
             $candidaturesParEntreprise[$entreprise->getId()] = $count;
         }
-
-        $candidaturesParEtudiant = [];
-        foreach ($students as $student) {
-            $candidaturesParEtudiant[$student->getId()] = count(
-                $em->getRepository(Candidature::class)->findBy(['user' => $student])
-            );
-        }
-
-        $candidatures = $em->getRepository(Candidature::class)->findAll();
-
+    
+        // Calculer les prénoms des utilisateurs par entreprise
         $candidaturesPrenomsParEntreprise = [];
-
         foreach ($entreprises as $entreprise) {
             $prenoms = [];
-        
+    
             foreach ($offres as $offre) {
-                if ((string) $offre->getEntreprise() === (string) $entreprise->getNom()) {
+                if ((string) $offre->getEntreprise() === (string) $entreprise->getId()) {
                     $candidatures = $em->getRepository(Candidature::class)->findBy(['stage' => $offre]);
-        
+    
                     foreach ($candidatures as $candidature) {
-                        $prenoms[] = $candidature->getUser()->getPrenom();
+                        // Ajout des prénoms des utilisateurs qui ont postulé pour chaque stage
+                        $user = $candidature->getUser();
+                        if ($user) {
+                            $prenoms[] = $user->getPrenom(); // Ajout du prénom
+                        }
                     }
                 }
             }
-        
+    
+            // Affectation des prénoms à chaque entreprise
             $candidaturesPrenomsParEntreprise[$entreprise->getId()] = $prenoms;
         }
-        
     
-        // Vues par entreprise (somme des vues des stages)
-        $vuesParEntreprise = [];
-        foreach ($entreprises as $entreprise) {
-            $vuesTotal = 0;
-    
-            foreach ($offres as $stage) {
-                if ((string) $stage->getEntreprise() === (string) $entreprise->getId()) {
-                    $vuesTotal += $vuesParStage[$stage->getId()] ?? 0;
-                }
-            }
-    
-            $vuesParEntreprise[$entreprise->getId()] = $vuesTotal;
+        // Filtrer les candidatures en fonction du rôle
+        if ($role == 'user') {
+            $candidatures = $em->getRepository(Candidature::class)->findBy(['user' => $userId]);
+        } else {
+            $candidatures = $em->getRepository(Candidature::class)->findAll();
         }
-
-        $candidatures = $em->getRepository(\App\Model\Candidature::class)->findAll();
     
+        // Passer les informations à la vue Twig
         return $view->render($response, 'parametres.twig', [
-            'title' => 'Settings',
+            'title' => 'Paramètres',
             'session' => [
-                'role' => $session->get('role'),
-                'idUser' => $session->get('idUser')
+                'role' => $role,
+                'idUser' => $userId
             ],
             'students' => $students,
             'tuteurs' => $tuteurs, 
@@ -273,10 +265,9 @@ class HomeController
             'entreprises' => $entreprises,
             'entreprisesParId' => $entreprisesParId,
             'vuesParStage' => $vuesParStage,
-            'vuesParEntreprise' => $vuesParEntreprise,
             'candidaturesParStage' => $candidaturesParStage,
             'candidatures' => $candidatures,
-            'candidaturesPrenomsParEntreprise' => $candidaturesPrenomsParEntreprise,
+            'candidaturesPrenomsParEntreprise' => $candidaturesPrenomsParEntreprise, // Cette variable est maintenant bien définie
         ]);
     }
     

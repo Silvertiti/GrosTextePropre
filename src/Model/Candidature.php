@@ -30,6 +30,8 @@ class Candidature
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $cvPath = null;
 
+    
+
     public function __construct(Stage $stage, User $user, string $motivation)
     {
         $this->stage = $stage;
