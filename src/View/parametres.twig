@@ -308,8 +308,6 @@
                     <th>Téléphone</th>
                     <th>SIRET</th>
                     <th>Note</th>
-                    <th>Vues</th>
-                    <th>Candidatures</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -321,10 +319,6 @@
                       <td data-label="Téléphone">{{ entreprise.getNumeroTelephone() }}</td>
                       <td data-label="SIRET">{{ entreprise.getSIRET() }}</td>
                       <td data-label="Note">{{ entreprise.getNoteEvaluation() }}</td>
-                      <td data-label="Vues" class="text-muted">
-                        {{ vuesParEntreprise[entreprise.getId()]|default(0) }}
-                      </td>
-                      <td data-label="Candidatures">{{ candidaturesParEntreprise[entreprise.getId()]|default(0) }}</td>
                       <td data-label="Actions">
                         <div class="btn-action-group">
                           <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
@@ -492,7 +486,6 @@
                     <th>Prénom</th>
                     <th>Nom</th>
                     <th>Email</th>
-                    <th>Candidatures</th>
                     <th>Action</th>
                   </tr>
                 </thead>
@@ -502,7 +495,6 @@
                       <td data-label="Prénom">{{ tuteur.getPrenom() }}</td>
                       <td data-label="Nom">{{ tuteur.getNom() }}</td>
                       <td data-label="Email">{{ tuteur.getEmail() }}</td>
-                      <td data-label="Candidatures">{{ candidaturesParEtudiant[student.getId()]|default(0) }}</td>
                       <td data-label="Actions">
                         <div class="btn-action-group">
                           <a href="/users/{{ tuteur.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
