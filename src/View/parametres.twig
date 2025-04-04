@@ -299,6 +299,7 @@
           </div>
 
           {% if entreprises is not empty %}
+          
             <div class="table-responsive">
               <table class="responsive-table" id="entreprisesTable">
                 <thead>
@@ -313,21 +314,24 @@
                 </thead>
                 <tbody>
                   {% for entreprise in entreprises %}
-                    <tr>
-                      <td data-label="Nom">{{ entreprise.getNom() }}</td>
-                      <td data-label="Email">{{ entreprise.getEmail() }}</td>
-                      <td data-label="Téléphone">{{ entreprise.getNumeroTelephone() }}</td>
-                      <td data-label="SIRET">{{ entreprise.getSIRET() }}</td>
-                      <td data-label="Note">{{ entreprise.getNoteEvaluation() }}</td>
-                      <td data-label="Actions">
-                        <div class="btn-action-group">
-                          <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
-                          <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
-                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
+                      {% if entreprise.status == 'active' %}
+
+                        <tr>
+                          <td data-label="Nom">{{ entreprise.getNom() }}</td>
+                          <td data-label="Email">{{ entreprise.getEmail() }}</td>
+                          <td data-label="Téléphone">{{ entreprise.getNumeroTelephone() }}</td>
+                          <td data-label="SIRET">{{ entreprise.getSIRET() }}</td>
+                          <td data-label="Note">{{ entreprise.getNoteEvaluation() }}</td>
+                          <td data-label="Actions">
+                            <div class="btn-action-group">
+                              <a href="/entreprises/{{ entreprise.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                              <form method="POST" action="/entreprises/{{ entreprise.getId() }}/delete" onsubmit="return confirm('Supprimer cette entreprise ?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                        {% endif %}
                   {% endfor %}
                 </tbody>
               </table>
@@ -401,27 +405,29 @@
                 </thead>
                 <tbody>
                   {% for offre in offres %}
-                    <tr>
-                      <td data-label="Titre">{{ offre.getTitre() }}</td>
-                      <td data-label="Entreprise">{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
-                      <td data-label="Vues">{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
-                      <td data-label="Candidatures">{{ candidaturesParStage[offre.getId()]|default(0) }}</td>
-                      <td data-label="Disponibilité">
-                        {% if offre.isDisponible() %}
-                          <span class="badge bg-success">Disponible</span>
-                        {% else %}
-                          <span class="badge bg-secondary">Indisponible</span>
-                        {% endif %}
-                      </td>
-                      <td data-label="Actions">
-                        <div class="btn-action-group">
-                          <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
-                          <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
-                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
+                      {% if offre.status == 'active' %}
+                        <tr>
+                          <td data-label="Titre">{{ offre.getTitre() }}</td>
+                          <td data-label="Entreprise">{{ entreprisesParId[offre.getEntreprise()]|default('Entreprise inconnue') }}</td>
+                          <td data-label="Vues">{{ vuesParStage[offre.getId()]|default(0) }} vue{{ vuesParStage[offre.getId()] == 1 ? '' : 's' }}</td>
+                          <td data-label="Candidatures">{{ candidaturesParStage[offre.getId()]|default(0) }}</td>
+                          <td data-label="Disponibilité">
+                            {% if offre.isDisponible() %}
+                              <span class="badge bg-success">Disponible</span>
+                            {% else %}
+                              <span class="badge bg-secondary">Indisponible</span>
+                            {% endif %}
+                          </td>
+                          <td data-label="Actions">
+                            <div class="btn-action-group">
+                              <a href="/stages/{{ offre.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                              <form method="POST" action="/stages/{{ offre.getId() }}/delete" onsubmit="return confirm('Supprimer ce stage ?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      {% endif %}
                   {% endfor %}
                 </tbody>
               </table>
@@ -491,7 +497,7 @@
                 </thead>
                 <tbody>
                   {% for tuteur in tuteurs %}
-                    <tr>
+                    <tr>      
                       <td data-label="Prénom">{{ tuteur.getPrenom() }}</td>
                       <td data-label="Nom">{{ tuteur.getNom() }}</td>
                       <td data-label="Email">{{ tuteur.getEmail() }}</td>
@@ -563,19 +569,21 @@
                 </thead>
                 <tbody>
                   {% for student in students %}
-                    <tr>
-                      <td data-label="Prénom">{{ student.getPrenom() }}</td>
-                      <td data-label="Nom">{{ student.getNom() }}</td>
-                      <td data-label="Email">{{ student.getEmail() }}</td>
-                      <td data-label="Actions">
-                        <div class="btn-action-group">
-                          <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
-                          <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
-                            <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
-                          </form>
-                        </div>
-                      </td>
-                    </tr>
+                      {% if user.status == 'active' %}
+                        <tr>
+                          <td data-label="Prénom">{{ student.getPrenom() }}</td>
+                          <td data-label="Nom">{{ student.getNom() }}</td>
+                          <td data-label="Email">{{ student.getEmail() }}</td>
+                          <td data-label="Actions">
+                            <div class="btn-action-group">
+                              <a href="/users/{{ student.getId() }}/edit" class="btn btn-sm btn-success">Modifier</a>
+                              <form method="POST" action="/users/{{ student.getId() }}/delete" onsubmit="return confirm('Supprimer cet utilisateur ?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Supprimer</button>
+                              </form>
+                            </div>
+                          </td>
+                        </tr>
+                      {% endif %}
                   {% endfor %}
                 </tbody>
               </table>
@@ -626,7 +634,6 @@
                           <th>Email</th>
                           <th>Stage</th>
                           <th>Entreprise</th>
-                          <th>État</th>
                       </tr>
                   </thead>
                   <tbody>
@@ -637,15 +644,6 @@
                               <td>{{ candidature.user.email }}</td>
                               <td>{{ candidature.stage.titre }}</td>
                               <td data-label="Entreprise">{{ entreprisesParId[candidature.getStage().getEntreprise()]|default('Entreprise inconnue') }}</td>
-                              <td>
-                                  {% if candidature.etat == 'en attente' %}
-                                      <span class="badge bg-warning">En attente</span>
-                                  {% elseif candidature.etat == 'accepte' %}
-                                      <span class="badge bg-success">Acceptée</span>
-                                  {% else %}
-                                      <span class="badge bg-danger">Refusée</span>
-                                  {% endif %}
-                              </td>
                           </tr>
                       {% endfor %}
                   </tbody>

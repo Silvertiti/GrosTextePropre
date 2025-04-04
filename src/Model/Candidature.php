@@ -30,15 +30,6 @@ class Candidature
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $cvPath = null;
 
-    // Nouvelle colonne pour le statut
-    #[ORM\Column(type: "string", length: 20)]
-    private string $status = 'En attente';  // Valeur par défaut est "En attente"
-
-    // Constantes pour les statuts
-    const STATUS_EN_ATTENTE = 'En attente';
-    const STATUS_REFUSE = 'Refusé';
-    const STATUS_ACCEPTE = 'Accepté';
-
     public function __construct(Stage $stage, User $user, string $motivation)
     {
         $this->stage = $stage;
@@ -64,18 +55,4 @@ class Candidature
     public function getCvPath(): ?string { return $this->cvPath; }
     public function setCvPath(?string $cvPath): void { $this->cvPath = $cvPath; }
 
-    // Getter et Setter pour le statut
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    public function setStatus(string $status): void
-    {
-        // Vérifier que le statut est valide avant de le définir
-        if (!in_array($status, [self::STATUS_EN_ATTENTE, self::STATUS_REFUSE, self::STATUS_ACCEPTE])) {
-            throw new \InvalidArgumentException('Statut invalide');
-        }
-        $this->status = $status;
-    }
 }

@@ -27,7 +27,7 @@ class EntrepriseController
         $app->post('/entreprises/create', [self::class, 'store']);
         $app->get('/entreprises/{id}/edit', [self::class, 'editForm']);
         $app->post('/entreprises/{id}/edit', [self::class, 'update']);
-        $app->post('/entreprises/{id}/delete', [self::class, 'delete']);
+        $app->post('/entreprises/{id}/delete', [self::class, 'deleteEntreprise']);
         $app->post('/entreprises/new', [EntrepriseController::class, 'store']);
         $app->get('/entreprise/vues', [self::class, 'vuesStages']);
     }
@@ -93,7 +93,6 @@ class EntrepriseController
             $entreprise->setEmail($data['email']);
             $entreprise->setNumeroTelephone($data['telephone']);
             $entreprise->setNoteEvaluation($data['note']);
-            $entreprise->setLienSiteWeb($data['site']);
             $entreprise->setDescription($data['description']);
 
             $em->flush(); 
@@ -102,16 +101,18 @@ class EntrepriseController
         return $response->withHeader('Location', '/parametres')->withStatus(302); 
     }
 
-    public function delete(Request $request, Response $response, array $args): Response
+    public function deleteEntreprise(Request $request, Response $response, array $args): Response
     {
         $em = $this->container->get(EntityManager::class);
         $entreprise = $em->getRepository(Entreprise::class)->find($args['id']);
-
+    
         if ($entreprise) {
-            $em->remove($entreprise);
-            $em->flush();
+            $entreprise->setStatus('deleted'); 
+    
+            $em->persist($entreprise); 
+            $em->flush(); 
         }
-
+    
         return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 

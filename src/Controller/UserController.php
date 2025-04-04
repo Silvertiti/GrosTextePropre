@@ -89,13 +89,13 @@ class UserController
     {
         $em = $this->container->get(EntityManager::class);
         $user = $em->getRepository(User::class)->find($args['id']);
-
+        
         if ($user) {
-            $em->remove($user);
+            $user->setStatus('deleted');
+            
             $em->flush();
         }
-
-        return $response->withHeader('Location', '/parametres')->withStatus(302);
+            return $response->withHeader('Location', '/parametres')->withStatus(302);
     }
 
     public function editForm(Request $request, Response $response, array $args): Response

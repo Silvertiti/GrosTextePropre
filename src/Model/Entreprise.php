@@ -27,22 +27,21 @@ final class Entreprise
     #[ORM\Column(type: 'integer')]
     private string $noteEvaluation;
 
-    #[ORM\Column(type: 'integer')]
-    private string $lienSiteWeb;
-
     #[ORM\Column(type: 'string')]
     private ?string $description = null;
 
 
     #[ORM\Column(name: 'registered_at', type: 'datetimetz_immutable', nullable: false)]
-
     private DateTimeImmutable $registeredAt;
+
+    #[ORM\Column(type: "string", length: 20, options: ["default" => "active"])]
+    private string $status;
 
     #[ORM\Column(type: 'integer')]
     private int $vues = 0;
 
 
-    public function __construct(string $SIRET, string $email, string $numeroTelephone, string $nom, string $noteEvaluation, string $lienSiteWeb, string $description)
+    public function __construct(string $SIRET, string $email, string $numeroTelephone, string $nom, string $noteEvaluation, string $description)
     {
         $this->SIRET = $SIRET;
         $this->email = $email;
@@ -50,7 +49,6 @@ final class Entreprise
         $this->nom = $nom;
         $this->noteEvaluation = $noteEvaluation;
         $this->registeredAt = new DateTimeImmutable('now');
-        $this->lienSiteWeb = $lienSiteWeb;
         $this->description = $description;
     }
     
@@ -62,17 +60,17 @@ final class Entreprise
     public function getRegisteredAt(): DateTimeImmutable { return $this->registeredAt; }
     public function getNom(): string { return $this->nom; }
     public function getNoteEvaluation(): string { return $this->noteEvaluation; }
-    public function getLienSiteWeb(): string { return $this->lienSiteWeb; }
     public function getDescription(): string { return $this->description; }
+    public function getStatus(): string{return $this->status;}
+
     
     public function setSIRET(string $SIRET): void { $this->SIRET = $SIRET; }
     public function setEmail(string $email): void { $this->email = $email; }
     public function setNumeroTelephone(string $numeroTelephone): void { $this->numeroTelephone = $numeroTelephone; }
     public function setNom(string $nom): void { $this->nom = $nom;}
     public function setNoteEvaluation(string $noteEvaluation): void { $this->noteEvaluation = $noteEvaluation; }
-    public function setLienSiteWeb(string $lienSiteWeb): void { $this->lienSiteWeb = $lienSiteWeb; }
     public function setDescription(string $description): void { $this->description = $description; }
-
+    public function setStatus(string $status): void{$this->status = $status;}
     public function getVues(): int
 {
     return $this->vues;

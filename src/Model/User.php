@@ -33,8 +33,10 @@ class User
     private DateTimeImmutable $registeredAt;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: Favori::class)]
-        private Collection $favoris;
+    private Collection $favoris;
 
+    #[ORM\Column(type: "string", length: 20, options: ["default" => "active"])]
+    private string $status;
 
 
     public function __construct(string $email, string $prenom, string $nom, string $motDePasse, string $role = 'user')
@@ -55,10 +57,14 @@ class User
     public function getRole(): string { return $this->role; }
     public function getPrenom(): string { return $this->prenom; }
     public function getNom(): string { return $this->nom; }
-    
+    public function getStatus(): string{return $this->status;}
+
     public function setEmail(string $email): void { $this->email = $email; }
     public function setMotDePasse(string $mdp): void { $this->motDePasse = $mdp; }
     public function setRole(string $role): void { $this->role = $role; }
     public function setPrenom(string $prenom): void { $this->prenom = $prenom; }
     public function setNom(string $nom): void { $this->nom = $nom;}
+    public function setStatus(string $status): void{$this->status = $status;}
 }
+
+

@@ -39,6 +39,8 @@ class Stage
     #[ORM\Column(type: "string", nullable: true)]
     private ?string $motsCles = null;
 
+    #[ORM\Column(type: "string", length: 20, options: ["default" => "active"])]
+    private string $status;
     
     #[ORM\Column(type: 'datetime')]
     private \DateTime $createdAt;
@@ -54,6 +56,7 @@ class Stage
     public function getDateDebut(): \DateTimeInterface { return $this->dateDebut; }
     public function getDateFin(): \DateTimeInterface { return $this->dateFin; }
     public function getMotsCles(): ?string { return $this->motsCles; }
+    public function getStatus(): string{return $this->status;}
 
     public function setTitre(string $titre): void { $this->titre = $titre; }
     public function setEntreprise(string $entreprise): void { $this->entreprise = $entreprise; }
@@ -63,6 +66,8 @@ class Stage
     public function setDateDebut(\DateTimeInterface $dateDebut): void { $this->dateDebut = $dateDebut; }
     public function setDateFin(\DateTimeInterface $dateFin): void { $this->dateFin = $dateFin; }
     public function setMotsCles(?string $motsCles): void { $this->motsCles = $motsCles; }
+    public function setStatus(string $status): void{$this->status = $status;}
+
 
 
     public function getCreatedAt(): \DateTime
